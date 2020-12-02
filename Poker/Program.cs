@@ -13,7 +13,7 @@ namespace Poker
         {
             string[] arStr = File.ReadAllLines(@"C:\Users\sachkovski.ev\Desktop\poker.txt");
 
-            Parsing.ParsingFile(/*File.ReadAllLines(args[0])*/arStr, out List<Game> games);
+            Parsing.ParsingFile(File.ReadAllLines(args[0]), out List<Game> games);
 
             foreach (Game game in games)
             {
@@ -33,19 +33,23 @@ namespace Poker
                         s += Converts.ConvertValueString(playerCard.Value) + playerCard.Suits;
                     }
 
-                    if (i < result.Count()-1 && result[i].HandValue == result[i + 1].HandValue && result[i].ResultHand[1].Value == result[i + 1].ResultHand[1].Value && result[i].ResultHand[2].Value == result[i + 1].ResultHand[2].Value && result[i].ResultHand[3].Value == result[i + 1].ResultHand[3].Value && result[i].ResultHand[4].Value == result[i + 1].ResultHand[4].Value)
+                    if (i < result.Count() - 1 && result[i].HandValue == result[i + 1].HandValue && result[i].ResultHand[0].Value == result[i + 1].ResultHand[0].Value && result[i].ResultHand[1].Value == result[i + 1].ResultHand[1].Value && result[i].ResultHand[2].Value == result[i + 1].ResultHand[2].Value && result[i].ResultHand[3].Value == result[i + 1].ResultHand[3].Value && result[i].ResultHand[4].Value == result[i + 1].ResultHand[4].Value)
                     {
                         Console.Write(s + "=");
                     }
-                    else 
+                    else if(i < result.Count()-1)
                     {
                         Console.Write(s + " ");
                     }
+                    else
+                    {
+                        Console.Write(s);
+                    }
                 }
                 Console.WriteLine();
-                /*
-                                foreach (ResultGame e in resultGame.OrderBy(x => x.HandValue).ThenBy(y => y.ResultHand[0].Value).ThenBy(y => y.ResultHand[1].Value).ThenBy(y => y.ResultHand[2].Value).ThenBy(y => y.ResultHand[3].Value).ThenBy(y => y.ResultHand[4].Value).ThenBy(y => y.PlayerCards[1].Suits))
-                                                {
+                
+                foreach (ResultGame e in resultGame.OrderBy(x => x.HandValue).ThenBy(y => y.ResultHand[0].Value).ThenBy(y => y.ResultHand[1].Value).ThenBy(y => y.ResultHand[2].Value).ThenBy(y => y.ResultHand[3].Value).ThenBy(y => y.ResultHand[4].Value).ThenBy(y => y.PlayerCards[1].Suits))
+                {
                                                     string s = "", h = "";
                                                     foreach (Card playerCard in e.PlayerCards)
                                                     {
@@ -56,9 +60,8 @@ namespace Poker
                                                         h += handCard.Value + handCard.Suits;
                                                     }
                                                     Console.WriteLine(s + " " + h + " " + e.HandValue);
-                                                }*/
+                }
             }
-            Console.ReadLine();
         }
     }
 }

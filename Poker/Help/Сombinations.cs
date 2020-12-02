@@ -109,68 +109,73 @@ namespace Poker.Help
                     }
                 }
             }
-
         }
 
         public static void Straight(int handValue, List<Card> playerCards, List<Card> cards, List<ResultGame> resultGame)
         {
+            List<Card> cardsPlayer = new List<Card>(cards);
             int countFlush = 1;
             int countStraight = 1;
-            for (int i = 0; i < cards.Count - 1; i++)
+            for (int i = 0; i < cardsPlayer.Count - 1; i++)
             {
-                if (cards[i].Value - cards[i + 1].Value == 1 && cards[i].Suits == cards[i + 1].Suits)
+                if (cardsPlayer[i].Value - cardsPlayer[i + 1].Value == 1 && cardsPlayer[i].Suits == cardsPlayer[i + 1].Suits)
                 {
                     countFlush++;
                     if (countFlush == 5)
                     {
-                        if (cards.Where(a => a.Value == 14).Where(s => s.Suits == cards[i].Suits).Count() == 1)
+                        if (cardsPlayer.Where(a => a.Value == 14).Where(s => s.Suits == cardsPlayer[i].Suits).Count() == 1)
                         {
-                            ResultConverterCards(10, i - 3, playerCards, cards, resultGame);
+                            ResultConverterCards(10, i - 3, playerCards, cardsPlayer, resultGame);
                             break;
                         }
                         else
                         {
-                            ResultConverterCards(9, i - 3, playerCards, cards, resultGame);
+                            ResultConverterCards(9, i - 3, playerCards, cardsPlayer, resultGame);
                             break;
                         }
 
                     }
                     else if (countFlush == 4
-                                && cards[i].Value == 3
-                                && cards[i].Suits == cards[i - 1].Suits
-                                && cards.Where(a => a.Value == 14).Where(s => s.Suits == cards[i].Suits).Count() == 1
-                                && cards.Where(a => a.Value == 2).Where(s => s.Suits == cards[i].Suits).Count() == 1)
+                                && cardsPlayer[i].Value == 3
+                                && cardsPlayer[i].Suits == cardsPlayer[i - 1].Suits
+                                && cardsPlayer.Where(a => a.Value == 14).Where(s => s.Suits == cardsPlayer[i].Suits).Count() == 1
+                                && cardsPlayer.Where(a => a.Value == 2).Where(s => s.Suits == cardsPlayer[i].Suits).Count() == 1)
                     {
-                        cards.Insert(i + 2, new Card { Value = 14, Suits = cards[i].Suits });
-                        ResultConverterCards(9, i - 2, playerCards, cards, resultGame);
+                        cardsPlayer.Insert(i + 2, new Card { Value = 14, Suits = cardsPlayer[i].Suits });
+                        ResultConverterCards(9, i - 2, playerCards, cardsPlayer, resultGame);
                         break;
                     }
                 }
-                else if (cards[i].Value - cards[i + 1].Value > 1)
+                else if (cardsPlayer[i].Value - cardsPlayer[i + 1].Value > 1)
                 {
                     countFlush = 1;
                 }
 
-                if (cards[i].Value - cards[i + 1].Value == 1)
+                if (cardsPlayer[i].Value - cardsPlayer[i + 1].Value == 1)
                 {
                     countStraight++;
                     if (countStraight == 5)
                     {
-                        ResultConverterCards(5, i - 3, playerCards, cards, resultGame);
+                        ResultConverterCards(5, i - 3, playerCards, cardsPlayer, resultGame);
                         break;
                     }
                     else if (countStraight == 4
-                                && cards[i].Value == 3
-                                && cards[i].Suits == cards[i - 1].Suits
-                                && cards.Where(a => a.Value == 14).Count() == 1
-                                && cards.Where(a => a.Value == 2).Count() == 1)
+                                && cardsPlayer[i].Value == 3
+                                && cardsPlayer[i].Suits == cardsPlayer[i - 1].Suits
+                                && cardsPlayer.Where(a => a.Value == 14).Count() == 1
+                                && cardsPlayer.Where(a => a.Value == 2).Count() == 1)
                     {
-                        cards.Insert(i + 2, new Card { Value = 14, Suits = cards[i].Suits });
-                        ResultConverterCards(5, i - 2, playerCards, cards, resultGame);
+                        cardsPlayer.Insert(i + 2, new Card { Value = 14, Suits = cardsPlayer[i].Suits });
+                        ResultConverterCards(5, i - 2, playerCards, cardsPlayer, resultGame);
                         break;
                     }
                 }
-                else if (cards[i].Value - cards[i + 1].Value > 1)
+                else if (cardsPlayer[i].Value == cardsPlayer[i + 1].Value)
+                {
+                    cardsPlayer.Remove(cardsPlayer[i + 1]);
+                    i = i - 1;
+                }
+                else if (cardsPlayer[i].Value - cardsPlayer[i + 1].Value > 1)
                 {
                     countStraight = 1;
                 }
@@ -275,6 +280,7 @@ namespace Poker.Help
                            cards.RemoveAll(p => p.Value == max[0].ResultHand[0].Value);
                             max[0].ResultHand.Add(card);
                         }
+                        cards.RemoveAll(p => p.Value == max[0].ResultHand[3].Value);
                         max[0].ResultHand.Add(cards[0]);
                         ResultConverterCards(3, 0, playerCards, max[0].ResultHand, resultGame);
                     }
