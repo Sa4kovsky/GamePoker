@@ -9,46 +9,107 @@ namespace Poker.Help
     {
         public static void Flush(string title, in List<Card> board, List<Card> playerCards, List<ResultGame> resultGame)
         {
-            List<Card> handCards;
-            
-            if (board != null)
+            if (title == "omaha-holdem")
             {
-                handCards = new List<Card>(board);
-            }
-            else 
-            {
-                handCards = new List<Card>();
-            }
-
-                
-            foreach (Card c in playerCards)
-            {
-                handCards.Add(new Card { Suits = c.Suits, Value = c.Value });
-            }
-            var cards = handCards.OrderBy(x => x.Suits).ThenByDescending(u => u.Value).ToList();
-     
-            int handValue = 0;
-            for (int i = 0; i < cards.Count - 4; i++)
-            {
-                if (cards[i].Suits == cards[i + 4].Suits)
+                List<Card> combinationCard;
+                List<List<Card>> cards1 = new List<List<Card>>();
+                for (int i = 0; i < playerCards.Count; i++)
                 {
-                    handValue = 6;
-                    ResultConverterCards(handValue, i, playerCards, cards, resultGame);
-                    Straight(handValue, playerCards, cards, resultGame);
-                    if (handValue < 9)
+                    for (int j = i + 1; j < playerCards.Count; j++)
+                    {
+                        combinationCard = new List<Card>() { new Card { Suits = playerCards[i].Suits, Value = playerCards[i].Value } };
+                        combinationCard.Add(new Card { Suits = playerCards[j].Suits, Value = playerCards[j].Value });
+                        cards1.Add(combinationCard);
+                    }
+                }
+
+                foreach (List<Card> e in cards1)
+                {
+                    List<Card> handCards;
+
+                    if (board != null)
+                    {
+                        handCards = new List<Card>(board);
+                    }
+                    else
+                    {
+                        handCards = new List<Card>();
+                    }
+
+                    foreach (Card c in e)
+                    {
+                        handCards.Add(new Card { Suits = c.Suits, Value = c.Value });
+                    }
+                    var cards = handCards.OrderBy(x => x.Suits).ThenByDescending(u => u.Value).ToList();
+
+                    int handValue = 0;
+                    for (int i = 0; i < cards.Count - 4; i++)
+                    {
+                        if (cards[i].Suits == cards[i + 4].Suits)
+                        {
+                            handValue = 6;
+                            ResultConverterCards(handValue, i, playerCards, cards, resultGame);
+                            Straight(handValue, playerCards, cards, resultGame);
+                            if (handValue < 9)
+                            {
+                                cards = handCards.OrderByDescending(u => u.Value).ToList();
+                                SearchMatch(playerCards, cards, resultGame);
+                            }
+                            break;
+                        }
+                        else if (i == cards.Count - 5)
+                        {
+                            cards = handCards.OrderByDescending(u => u.Value).ToList();
+                            Straight(0, playerCards, cards, resultGame);
+                            SearchMatch(playerCards, cards, resultGame);
+                        }
+                    }
+                }
+
+            }
+            else
+            {
+                List<Card> handCards;
+
+                if (board != null)
+                {
+                    handCards = new List<Card>(board);
+                }
+                else
+                {
+                    handCards = new List<Card>();
+                }
+             
+                foreach (Card c in playerCards)
+                {
+                    handCards.Add(new Card { Suits = c.Suits, Value = c.Value });
+                }
+                var cards = handCards.OrderBy(x => x.Suits).ThenByDescending(u => u.Value).ToList();
+
+                int handValue = 0;
+                for (int i = 0; i < cards.Count - 4; i++)
+                {
+                    if (cards[i].Suits == cards[i + 4].Suits)
+                    {
+                        handValue = 6;
+                        ResultConverterCards(handValue, i, playerCards, cards, resultGame);
+                        Straight(handValue, playerCards, cards, resultGame);
+                        if (handValue < 9)
+                        {
+                            cards = handCards.OrderByDescending(u => u.Value).ToList();
+                            SearchMatch(playerCards, cards, resultGame);
+                        }
+                        break;
+                    }
+                    else if (i == cards.Count - 5)
                     {
                         cards = handCards.OrderByDescending(u => u.Value).ToList();
+                        Straight(0, playerCards, cards, resultGame);
                         SearchMatch(playerCards, cards, resultGame);
                     }
-                    break;
-                }
-                else if (i == cards.Count - 5)
-                {
-                    cards = handCards.OrderByDescending(u => u.Value).ToList();
-                    Straight(0, playerCards, cards, resultGame);
-                    SearchMatch(playerCards, cards, resultGame);
                 }
             }
+
         }
 
         public static void Straight(int handValue, List<Card> playerCards, List<Card> cards, List<ResultGame> resultGame)

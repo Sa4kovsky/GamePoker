@@ -13,11 +13,11 @@ namespace Poker
         {
             string[] arStr = File.ReadAllLines(@"C:\Users\sachkovski.ev\Desktop\poker.txt");
 
-            Parsing.ParsingFile(File.ReadAllLines(args[0]), out List<Game> games);
+            Parsing.ParsingFile(/*File.ReadAllLines(args[0])*/arStr, out List<Game> games);
 
             foreach (Game game in games)
             {
-                Console.Write(game.Title + " ");
+                //Console.Write(game.Title + " ");
                 List<ResultGame> resultGame = new List<ResultGame>();
                 foreach (Player player in game.Players)
                 {
@@ -37,26 +37,26 @@ namespace Poker
                     {
                         Console.Write(s + "=");
                     }
-                    else
+                    else 
                     {
                         Console.Write(s + " ");
-                    } 
+                    }
                 }
                 Console.WriteLine();
-
-              /*  foreach (ResultGame e in resultGame.OrderBy(x => x.HandValue).ThenBy(y => y.ResultHand[0].Value).ThenBy(y => y.ResultHand[1].Value).ThenBy(y => y.ResultHand[2].Value).ThenBy(y => y.ResultHand[3].Value).ThenBy(y => y.ResultHand[4].Value).ThenBy(y => y.PlayerCards[1].Suits))
-                                {
-                                    string s = "", h = "";
-                                    foreach (Card playerCard in e.PlayerCards)
-                                    {
-                                        s += playerCard.Value + playerCard.Suits;
-                                    }
-                                    foreach (Card handCard in e.ResultHand)
-                                    {
-                                        h += handCard.Value + handCard.Suits;
-                                    }
-                                    Console.WriteLine(s + " " + h + " " + e.HandValue);
-                                }*/
+                /*
+                                foreach (ResultGame e in resultGame.OrderBy(x => x.HandValue).ThenBy(y => y.ResultHand[0].Value).ThenBy(y => y.ResultHand[1].Value).ThenBy(y => y.ResultHand[2].Value).ThenBy(y => y.ResultHand[3].Value).ThenBy(y => y.ResultHand[4].Value).ThenBy(y => y.PlayerCards[1].Suits))
+                                                {
+                                                    string s = "", h = "";
+                                                    foreach (Card playerCard in e.PlayerCards)
+                                                    {
+                                                        s += playerCard.Value + playerCard.Suits;
+                                                    }
+                                                    foreach (Card handCard in e.ResultHand)
+                                                    {
+                                                        h += handCard.Value + handCard.Suits;
+                                                    }
+                                                    Console.WriteLine(s + " " + h + " " + e.HandValue);
+                                                }*/
             }
             Console.ReadLine();
         }
