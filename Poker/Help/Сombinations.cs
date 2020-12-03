@@ -1,330 +1,469 @@
-﻿using Poker.Model;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+
+using Poker.Model;
+using static Poker.Help.SortHandCards;
 
 namespace Poker.Help
 {
     public static class Сombinations
     {
-        public static void Flush(string title, in List<Card> board, List<Card> playerCards, List<ResultGame> resultGame)
+        public static List<ResultGame> DefinitionCombinations(GameType type, List<Card> board, List<Card> playerCards)
         {
-            if (title == "omaha-holdem")
+            var resultGame = new List<ResultGame>();
+            var preliminaryResult = new List<ResultGame>();
+            List<ResultGame> combinations;
+            List<ResultGame> max;
+            List<Card> handCards;
+
+            switch (type)
             {
-                List<Card> combinationCard;
-                List<List<Card>> cards1 = new List<List<Card>>();
-                for (int i = 0; i < playerCards.Count; i++)
-                {
-                    for (int j = i + 1; j < playerCards.Count; j++)
+                case GameType.Holdem:
+                    handCards = new List<Card>(board);
+                    handCards.AddRange(playerCards);
+
+                    preliminaryResult = Flush(playerCards, SortCardsBySuit(handCards), preliminaryResult);
+
+                    if (preliminaryResult.Count != 0 && preliminaryResult[0].HandValue == 6)
                     {
-                        combinationCard = new List<Card>() { new Card { Suits = playerCards[i].Suits, Value = playerCards[i].Value } };
-                        combinationCard.Add(new Card { Suits = playerCards[j].Suits, Value = playerCards[j].Value });
-                        cards1.Add(combinationCard);
+                        preliminaryResult = StraightFlush(playerCards, SortCardsByValue(handCards), preliminaryResult);
                     }
-                }
 
-                foreach (List<Card> e in cards1)
-                {
-                    List<Card> handCards;
+                    preliminaryResult = Straight(playerCards, SortCardsByValue(handCards), preliminaryResult);
 
-                    if (board != null)
+                    combinations = SearchMatch(playerCards, SortCardsByValue(handCards));
+                    max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
+                        .ToList();
+
+                    if (max.Count != 0)
+                    {
+                        switch (5 - max[0].ResultHand.Count)
+                        {
+                            case 1:
+                                {
+                                    preliminaryResult = FourKind(playerCards, SortCardsByValue(handCards), max, preliminaryResult);
+                                    break;
+                                }
+
+                            case 2:
+                                {
+                                    preliminaryResult = FullHouseORThreeKind(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
+                                    break;
+                                }
+
+                            case 3:
+                                {
+                                    preliminaryResult = TwoPairsORPairs(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
+                                    break;
+                                }
+                        }
+                    }
+                    else 
+                    {
+                        preliminaryResult = SearchOlder(playerCards, SortCardsByValue(handCards), preliminaryResult);
+                    }
+
+                    resultGame = preliminaryResult;
+
+                    break;
+                case GameType.Omaha:
+                    var playerPairs = GetHandCombinations(playerCards);
+
+                    foreach (List<Card> e in playerPairs)
                     {
                         handCards = new List<Card>(board);
+
+                        foreach (Card c in e)
+                        {
+                            handCards.Add(new Card { Suit = c.Suit, Value = c.Value });
+                        }
+
+                        preliminaryResult = Flush(playerCards, SortCardsBySuit(handCards), preliminaryResult);
+
+                        if (preliminaryResult.Count != 0 && preliminaryResult[0].HandValue == 6)
+                        {
+                            preliminaryResult = StraightFlush(playerCards, SortCardsByValue(handCards), preliminaryResult);
+                        }
+
+                        preliminaryResult = Straight(playerCards, SortCardsByValue(handCards), preliminaryResult);
+
+                        combinations = SearchMatch(playerCards, SortCardsByValue(handCards));
+                        max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
+                            .ToList();
+
+                        if (max.Count != 0)
+                        {
+                            switch (5 - max[0].ResultHand.Count)
+                            {
+                                case 1:
+                                    {
+                                        preliminaryResult = FourKind(playerCards, SortCardsByValue(handCards), max, preliminaryResult);
+                                        break;
+                                    }
+
+                                case 2:
+                                    {
+                                        preliminaryResult = FullHouseORThreeKind(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
+                                        break;
+                                    }
+
+                                case 3:
+                                    {
+                                        preliminaryResult = TwoPairsORPairs(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
+                                        break;
+                                    }
+                            }
+                        }
+                        else
+                        {
+                            preliminaryResult = SearchOlder(playerCards, SortCardsByValue(handCards), preliminaryResult);
+                        }
+
+                        resultGame = preliminaryResult;
+
+                    }
+                    break;
+                case GameType.FiveCard:
+                    handCards = new List<Card>();
+                    handCards.AddRange(playerCards);
+
+                    preliminaryResult = Flush(playerCards, SortCardsBySuit(handCards), preliminaryResult);
+
+                    if (preliminaryResult.Count != 0 && preliminaryResult[0].HandValue == 6)
+                    {
+                        preliminaryResult = StraightFlush(playerCards, SortCardsByValue(handCards), preliminaryResult);
+                    }
+
+                    preliminaryResult = Straight(playerCards, SortCardsByValue(handCards), preliminaryResult);
+
+                    combinations = SearchMatch(playerCards, SortCardsByValue(handCards));
+                    max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
+                        .ToList();
+
+                    if (max.Count != 0)
+                    {
+                        switch (5 - max[0].ResultHand.Count)
+                        {
+                            case 1:
+                                {
+                                    preliminaryResult = FourKind(playerCards, SortCardsByValue(handCards), max, preliminaryResult);
+                                    break;
+                                }
+
+                            case 2:
+                                {
+                                    preliminaryResult = FullHouseORThreeKind(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
+                                    break;
+                                }
+
+                            case 3:
+                                {
+                                    preliminaryResult = TwoPairsORPairs(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
+                                    break;
+                                }
+                        }
                     }
                     else
                     {
-                        handCards = new List<Card>();
+                        preliminaryResult = SearchOlder(playerCards, SortCardsByValue(handCards), preliminaryResult);
                     }
 
-                    foreach (Card c in e)
-                    {
-                        handCards.Add(new Card { Suits = c.Suits, Value = c.Value });
-                    }
-                    var cards = handCards.OrderBy(x => x.Suits).ThenByDescending(u => u.Value).ToList();
-
-                    int handValue = 0;
-                    for (int i = 0; i < cards.Count - 4; i++)
-                    {
-                        if (cards[i].Suits == cards[i + 4].Suits)
-                        {
-                            handValue = 6;
-                            ResultConverterCards(handValue, i, playerCards, cards, resultGame);
-                            Straight(handValue, playerCards, cards, resultGame);
-                            if (handValue < 9)
-                            {
-                                cards = handCards.OrderByDescending(u => u.Value).ToList();
-                                SearchMatch(playerCards, cards, resultGame);
-                            }
-                            break;
-                        }
-                        else if (i == cards.Count - 5)
-                        {
-                            cards = handCards.OrderByDescending(u => u.Value).ToList();
-                            Straight(0, playerCards, cards, resultGame);
-                            SearchMatch(playerCards, cards, resultGame);
-                        }
-                    }
-                }
-
+                    resultGame = preliminaryResult;
+                    break;
             }
-            else
-            {
-                List<Card> handCards;
 
-                if (board != null)
-                {
-                    handCards = new List<Card>(board);
-                }
-                else
-                {
-                    handCards = new List<Card>();
-                }
-             
-                foreach (Card c in playerCards)
-                {
-                    handCards.Add(new Card { Suits = c.Suits, Value = c.Value });
-                }
-                var cards = handCards.OrderBy(x => x.Suits).ThenByDescending(u => u.Value).ToList();
-
-                int handValue = 0;
-                for (int i = 0; i < cards.Count - 4; i++)
-                {
-                    if (cards[i].Suits == cards[i + 4].Suits)
-                    {
-                        handValue = 6;
-                        ResultConverterCards(handValue, i, playerCards, cards, resultGame);
-                        Straight(handValue, playerCards, cards, resultGame);
-                        if (handValue < 9)
-                        {
-                            cards = handCards.OrderByDescending(u => u.Value).ToList();
-                            SearchMatch(playerCards, cards, resultGame);
-                        }
-                        break;
-                    }
-                    else if (i == cards.Count - 5)
-                    {
-                        cards = handCards.OrderByDescending(u => u.Value).ToList();
-                        Straight(0, playerCards, cards, resultGame);
-                        SearchMatch(playerCards, cards, resultGame);
-                    }
-                }
-            }
+            return resultGame;
         }
 
-        public static void Straight(int handValue, List<Card> playerCards, List<Card> cards, List<ResultGame> resultGame)
+        public static List<List<Card>> GetHandCombinations(List<Card> playerCards)
         {
-            List<Card> cardsPlayer = new List<Card>(cards);
-            int countFlush = 1;
-            int countStraight = 1;
-            for (int i = 0; i < cardsPlayer.Count - 1; i++)
+            var cards = new List<List<Card>>();
+            for (var i = 0; i < playerCards.Count; i++)
             {
-                if (cardsPlayer[i].Value - cardsPlayer[i + 1].Value == 1 && cardsPlayer[i].Suits == cardsPlayer[i + 1].Suits)
+                for (var j = i + 1; j < playerCards.Count; j++)
+                {
+                    var combinationCard = new List<Card>
+                    {
+                        new Card {Suit = playerCards[i].Suit, Value = playerCards[i].Value},
+                        new Card {Suit = playerCards[j].Suit, Value = playerCards[j].Value}
+                    };
+                    cards.Add(combinationCard);
+                }
+            }
+            return cards;
+        }
+
+        public static List<ResultGame> Flush (List<Card> playerCards, List<Card> handCards, List<ResultGame> resultGame)
+        {
+            for (int i = 0; i < handCards.Count - 4; i++)
+            {
+                if (handCards[i].Suit == handCards[i + 4].Suit)
+                {
+                    resultGame = ResultConverterCards(resultHandValue: 6, i, playerCards, handCards, resultGame);
+                    break;
+                }
+            }
+
+            return resultGame;
+        }
+
+        public static List<ResultGame> StraightFlush(List<Card> playerCards, List<Card> handCards, List<ResultGame> resultGame)
+        {
+            var countFlush = 1;
+
+            for (var i = 0; i < handCards.Count - 1; i++)
+            {
+                if (handCards[i].Value - handCards[i + 1].Value == 1 &&
+                    handCards[i].Suit == handCards[i + 1].Suit)
                 {
                     countFlush++;
                     if (countFlush == 5)
                     {
-                        if (cardsPlayer.Where(a => a.Value == 14).Where(s => s.Suits == cardsPlayer[i].Suits).Count() == 1)
+                        if (handCards.Where(a => a.Value == 14).Count(s => s.Suit == handCards[i].Suit) == 1)
                         {
-                            ResultConverterCards(10, i - 3, playerCards, cardsPlayer, resultGame);
+                            resultGame = ResultConverterCards(resultHandValue: 10, i - 3, playerCards, handCards, resultGame);
                             break;
                         }
                         else
                         {
-                            ResultConverterCards(9, i - 3, playerCards, cardsPlayer, resultGame);
+                            resultGame = ResultConverterCards(resultHandValue: 9, i - 2, playerCards, handCards, resultGame);
                             break;
                         }
-
                     }
                     else if (countFlush == 4
-                                && cardsPlayer[i].Value == 3
-                                && cardsPlayer[i].Suits == cardsPlayer[i - 1].Suits
-                                && cardsPlayer.Where(a => a.Value == 14).Where(s => s.Suits == cardsPlayer[i].Suits).Count() == 1
-                                && cardsPlayer.Where(a => a.Value == 2).Where(s => s.Suits == cardsPlayer[i].Suits).Count() == 1)
+                             && handCards[i].Value == 3
+                             && handCards[i].Suit == handCards[i - 1].Suit
+                             && handCards.Where(a => a.Value == 14).Count(s => s.Suit == handCards[i].Suit) == 1
+                             && handCards.Where(a => a.Value == 2).Count(s => s.Suit == handCards[i].Suit) == 1)
                     {
-                        cardsPlayer.Insert(i + 2, new Card { Value = 14, Suits = cardsPlayer[i].Suits });
-                        ResultConverterCards(9, i - 2, playerCards, cardsPlayer, resultGame);
+                        handCards.Insert(i + 2, new Card { Value = 14, Suit = handCards[i].Suit });
+                        resultGame = ResultConverterCards(resultHandValue: 9, i - 2, playerCards, handCards, resultGame);
                         break;
                     }
                 }
-                else if (cardsPlayer[i].Value - cardsPlayer[i + 1].Value > 1)
+                else if (handCards[i].Value - handCards[i + 1].Value > 1 || handCards[i].Value == handCards[i + 1].Value || handCards[i].Suit != handCards[i + 1].Suit)
                 {
                     countFlush = 1;
                 }
+            }
 
+            return resultGame;
+        }
+
+        public static List<ResultGame> Straight (List<Card> playerCards, List<Card> handCards, List<ResultGame> resultGame)
+        {
+            var cardsPlayer = new List<Card>(handCards);
+            var countStraight = 1;
+
+            for (var i = 0; i < cardsPlayer.Count - 1; i++)
+            {
                 if (cardsPlayer[i].Value - cardsPlayer[i + 1].Value == 1)
                 {
                     countStraight++;
                     if (countStraight == 5)
                     {
-                        ResultConverterCards(5, i - 3, playerCards, cardsPlayer, resultGame);
+                        resultGame = ResultConverterCards(resultHandValue: 5, i - 3, playerCards, cardsPlayer, resultGame);
                         break;
                     }
                     else if (countStraight == 4
-                                && cardsPlayer[i].Value == 3
-                                && cardsPlayer[i].Suits == cardsPlayer[i - 1].Suits
-                                && cardsPlayer.Where(a => a.Value == 14).Count() == 1
-                                && cardsPlayer.Where(a => a.Value == 2).Count() == 1)
+                             && cardsPlayer[i].Value == 3
+                             && cardsPlayer[i].Suit == cardsPlayer[i - 1].Suit
+                             && cardsPlayer.Count(a => a.Value == 14) == 1
+                             && cardsPlayer.Count(a => a.Value == 2) == 1)
                     {
-                        cardsPlayer.Insert(i + 2, new Card { Value = 14, Suits = cardsPlayer[i].Suits });
-                        ResultConverterCards(5, i - 2, playerCards, cardsPlayer, resultGame);
+                        cardsPlayer.Insert(i + 2, new Card { Value = 14, Suit = cardsPlayer[i].Suit });
+                        resultGame = ResultConverterCards(resultHandValue: 5, i - 2, playerCards, cardsPlayer, resultGame);
                         break;
                     }
                 }
                 else if (cardsPlayer[i].Value == cardsPlayer[i + 1].Value)
                 {
                     cardsPlayer.Remove(cardsPlayer[i + 1]);
-                    i = i - 1;
+                    i -= 1;
                 }
                 else if (cardsPlayer[i].Value - cardsPlayer[i + 1].Value > 1)
                 {
                     countStraight = 1;
                 }
             }
+
+            return resultGame;
         }
 
-        public static void SearchMatch(List<Card> playerCards, List<Card> cards, List<ResultGame> resultGame)
+        public static List<ResultGame> SearchMatch(List<Card> playerCards, List<Card> handCards)
         {
-            List<ResultGame> combinations = new List<ResultGame>();
-            int count = 1;
-            for (int i = 0; i < cards.Count-1; i++)
+            var combinations = new List<ResultGame>();
+
+            var count = 1;
+            for (var i = 0; i < handCards.Count - 1; i++)
             {
-                if (cards[i].Value - cards[i + 1].Value == 0)
+                if (handCards[i].Value - handCards[i + 1].Value == 0)
                 {
                     count++;
                 }
-                else 
-                { 
-                    count = 1; 
+                else
+                {
+                    count = 1;
                 }
 
-                if (count == 4)
+                switch (count)
                 {
-                    List<Card> resultHandCarts = new List<Card>();
-                    for (int j = i-2; j <= i+1; j++)
-                    {
-                        resultHandCarts.Add(new Card { Suits = cards[j].Suits, Value = cards[j].Value });
-                    }
-                    combinations.Add(new ResultGame { PlayerCards = playerCards, HandValue = 8, ResultHand = resultHandCarts });
-                }
-                else if (count == 3)
-                {
-                    List<Card> resultHandCarts = new List<Card>();
-                    for (int j = i - 1; j <= i+1; j++)
-                    {
-                        resultHandCarts.Add(new Card { Suits = cards[j].Suits, Value = cards[j].Value });
-                    }
-                    combinations.Add(new ResultGame { PlayerCards = playerCards, HandValue = 4, ResultHand = resultHandCarts });
-                }
-                else if (count == 2)
-                {
-                    List<Card> resultHandCarts = new List<Card>();
-                    for (int j = i; j <= i+1; j++)
-                    {
-                        resultHandCarts.Add(new Card { Suits = cards[j].Suits, Value = cards[j].Value });
-                    }
-                    combinations.Add(new ResultGame { PlayerCards = playerCards, HandValue = 2, ResultHand = resultHandCarts });
+                    case 4:
+                        {
+                            var resultHandCarts = new List<Card>();
+                            for (var j = i - 2; j <= i + 1; j++)
+                            {
+                                resultHandCarts.Add(new Card { Suit = handCards[j].Suit, Value = handCards[j].Value });
+                            }
+
+                            combinations.Add(new ResultGame
+                            { PlayerCards = playerCards, HandValue = 8, ResultHand = resultHandCarts });
+                            break;
+                        }
+
+                    case 3:
+                        {
+                            var resultHandCarts = new List<Card>();
+                            for (var j = i - 1; j <= i + 1; j++)
+                            {
+                                resultHandCarts.Add(new Card { Suit = handCards[j].Suit, Value = handCards[j].Value });
+                            }
+
+                            combinations.Add(new ResultGame
+                            { PlayerCards = playerCards, HandValue = 4, ResultHand = resultHandCarts });
+                            break;
+                        }
+
+                    case 2:
+                        {
+                            var resultHandCarts = new List<Card>();
+                            for (var j = i; j <= i + 1; j++)
+                            {
+                                resultHandCarts.Add(new Card { Suit = handCards[j].Suit, Value = handCards[j].Value });
+                            }
+
+                            combinations.Add(new ResultGame
+                            { PlayerCards = playerCards, HandValue = 2, ResultHand = resultHandCarts });
+                            break;
+                        }
                 }
             }
-            FullHouse(combinations, playerCards, cards, resultGame);
+
+            return combinations;
         }
 
-        public static void FullHouse(List<ResultGame> combinations, List<Card> playerCards,  in List<Card> cards, List<ResultGame> resultGame)
+        public static List<ResultGame> FourKind(List<Card> playerCards, List<Card> handCards, List<ResultGame> max, List<ResultGame> resultGame)
         {
-            var max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue))).ToList();
             if (max.Count != 0)
             {
                 if (5 - max[0].ResultHand.Count == 1)
                 {
-                    cards.RemoveAll(p=>p.Value == max[0].ResultHand[0].Value);
-                    max[0].ResultHand.Add(cards[0]);
-                    ResultConverterCards(8, 0, playerCards, max[0].ResultHand, resultGame);
+                    handCards.RemoveAll(p => p.Value == max[0].ResultHand[0].Value);
+                    max[0].ResultHand.Add(handCards[0]);
+                    resultGame = ResultConverterCards(resultHandValue: 8, 0, playerCards, max[0].ResultHand, resultGame);
                 }
-                else if (5 - max[0].ResultHand.Count == 2)
-                {
-                    if (combinations.Count > 2)
-                    {
-                        var pair = combinations.Where(e => e.HandValue == 2).ToList();
-                        if (pair.Count > 1)
-                        {
-                            pair.RemoveAll(p => p.ResultHand[0].Value == max[0].ResultHand[0].Value);
-                        }
-                        foreach (Card card in pair[0].ResultHand)
-                        {
-                            cards.RemoveAll(p => p.Value == max[0].ResultHand[0].Value);
-                            max[0].ResultHand.Add(card);
-                        }
-                        ResultConverterCards(7, 0, playerCards, max[0].ResultHand, resultGame);
-                    }
-                    else
-                    {
-                        for (int i = 0; i < 2; i++)
-                        {
-                            cards.RemoveAll(p => p.Value == max[0].ResultHand[0].Value);
-                            max[0].ResultHand.Add(cards[i]);
-                        }
-                        ResultConverterCards(4, 0, playerCards, max[0].ResultHand, resultGame);
-                    }
-                }
-                else if (5 - max[0].ResultHand.Count == 3)
-                {
-                    if (combinations.Count > 1)
-                    {
-                        var pair = combinations.Where(e => e.HandValue == 2).ToList();
-                        if (pair.Count > 1)
-                        {
-                            pair.RemoveAll(p => p.ResultHand[0].Value == max[0].ResultHand[0].Value);
-                            //pair.Remove(pair[0]);
-                        }
-                        foreach (Card card in pair[0].ResultHand)
-                        {
-                           cards.RemoveAll(p => p.Value == max[0].ResultHand[0].Value);
-                            max[0].ResultHand.Add(card);
-                        }
-                        cards.RemoveAll(p => p.Value == max[0].ResultHand[3].Value);
-                        max[0].ResultHand.Add(cards[0]);
-                        ResultConverterCards(3, 0, playerCards, max[0].ResultHand, resultGame);
-                    }
-                    else
-                    {
-                        for (int i = 0; i < 3; i++)
-                        {
-                            cards.RemoveAll(p => p.Value == max[0].ResultHand[0].Value);
-                            max[0].ResultHand.Add(cards[i]);
-                        }
-                        ResultConverterCards(2, 0, playerCards, max[0].ResultHand, resultGame);
+            }
+            return resultGame;
+        }
 
-                    }
+        public static List<ResultGame> FullHouseORThreeKind(List<Card> playerCards, List<Card> handCards, List<ResultGame> combinations, List<ResultGame> max, List<ResultGame> resultGame)
+        {
+            if (combinations.Count > 2)
+            {
+                var pair = combinations.Where(e => e.HandValue == 2).ToList();
+                if (pair.Count > 1)
+                {
+                    pair.RemoveAll(p => p.ResultHand[0].Value == max[0].ResultHand[0].Value);
                 }
+
+                foreach (Card card in pair[0].ResultHand)
+                {
+                    handCards.RemoveAll(p => p.Value == max[0].ResultHand[0].Value);
+                    max[0].ResultHand.Add(card);
+                }
+
+                resultGame = ResultConverterCards(resultHandValue: 7, i: 0, playerCards, max[0].ResultHand, resultGame);
             }
             else
             {
-                SearchOlder(playerCards, cards, resultGame);
-            }
-
-        }
-
-        public static void SearchOlder(List<Card> playerCards, List<Card> cards, List<ResultGame> resultGame)
-        {
-            List<Card> older = new List<Card>();
-            for (int i = 0; i < 5; i++)
-            {
-                older.Add(cards[i]);
-            }
-            ResultConverterCards(1, 0, playerCards, cards, resultGame);
-        }
-
-        public static void ResultConverterCards(int resultHandValue, int i, List<Card> playerCards, List<Card> handCards, List<ResultGame> resultGames)
-        {
-            if (resultGames.Where(p => p.PlayerCards == playerCards).Count() == 0 || resultHandValue > resultGames.Where(p => p.PlayerCards == playerCards).Max(e => e.HandValue) )
-            {
-                resultGames.RemoveAll(p => p.PlayerCards == playerCards);
-                List<Card> resultHandCarts = new List<Card>();
-                for (int j = i; j < i + 5; j++)
+                for (int i = 0; i < 2; i++)
                 {
-                    resultHandCarts.Add(new Card { Suits = handCards[j].Suits, Value = handCards[j].Value });
+                    handCards.RemoveAll(p => p.Value == max[0].ResultHand[0].Value);
+                    max[0].ResultHand.Add(handCards[i]);
                 }
-                resultGames.Add(new ResultGame {HandValue = resultHandValue, PlayerCards = playerCards, ResultHand = resultHandCarts });
+
+                resultGame = ResultConverterCards(resultHandValue: 4, i: 0, playerCards, max[0].ResultHand, resultGame);
             }
+
+            return resultGame;
+        }
+
+        public static List<ResultGame> TwoPairsORPairs(List<Card> playerCards, List<Card> handCards, List<ResultGame> combinations, List<ResultGame> max, List<ResultGame> resultGame)
+        {
+            if (combinations.Count > 1)
+            {
+                var pair = combinations.Where(e => e.HandValue == 2).ToList();
+                if (pair.Count > 1)
+                {
+                    pair.RemoveAll(p => p.ResultHand[0].Value == max[0].ResultHand[0].Value);
+                }
+
+                foreach (var card in pair[0].ResultHand)
+                {
+                    handCards.RemoveAll(p => p.Value == max[0].ResultHand[0].Value);
+                    max[0].ResultHand.Add(card);
+                }
+
+                handCards.RemoveAll(p => p.Value == max[0].ResultHand[3].Value);
+                max[0].ResultHand.Add(handCards[0]);
+                resultGame = ResultConverterCards(resultHandValue: 3, i: 0, playerCards, max[0].ResultHand, resultGame);
+            }
+            else
+            {
+                for (var i = 0; i < 3; i++)
+                {
+                    handCards.RemoveAll(p => p.Value == max[0].ResultHand[0].Value);
+                    max[0].ResultHand.Add(handCards[i]);
+                }
+
+                resultGame = ResultConverterCards(resultHandValue: 2, i: 0, playerCards, max[0].ResultHand, resultGame);
+            }
+
+            return resultGame;
+        } 
+
+        public static List<ResultGame> SearchOlder(List<Card> playerCards, List<Card> handCards, List<ResultGame> resultGame)
+        {
+            var older = new List<Card>();
+            for (var i = 0; i < 5; i++)
+            {
+                older.Add(handCards[i]);
+            }
+
+            resultGame = ResultConverterCards(1, 0, playerCards, handCards, resultGame);
+
+            return resultGame;
+        }
+
+        public static List<ResultGame> ResultConverterCards(int resultHandValue, int i, List<Card> playerCards,
+            List<Card> handCards, List<ResultGame> resultGames)
+        {
+            if (resultGames.Count(p => p.PlayerCards == playerCards) != 0 && resultHandValue <=
+                resultGames.Where(p => p.PlayerCards == playerCards).Max(e => e.HandValue))
+            {
+                return resultGames;
+            }
+            resultGames.RemoveAll(p => p.PlayerCards == playerCards);
+            var resultHandCarts = new List<Card>();
+            for (var j = i; j < i + 5; j++)
+            {
+                resultHandCarts.Add(new Card { Suit = handCards[j].Suit, Value = handCards[j].Value });
+            }
+
+            resultGames.Add(new ResultGame
+            { HandValue = resultHandValue, PlayerCards = playerCards, ResultHand = resultHandCarts });
+            return resultGames;
         }
     }
 }

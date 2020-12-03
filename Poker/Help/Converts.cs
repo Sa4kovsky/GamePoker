@@ -1,6 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using static Poker.Help.EnumCards;
 
 namespace Poker.Help
 {
@@ -8,52 +7,28 @@ namespace Poker.Help
     {
         public static int ConvertValue(string c)
         {
-            switch (c)
+            return c switch
             {
-                case "K":
-                    return (int)EnumCards.ValueCards.K;
-
-                case "A":
-                    return (int)EnumCards.ValueCards.A;
-
-                case "Q":
-                    return (int)EnumCards.ValueCards.Q;
-
-                case "J":
-                    return (int)EnumCards.ValueCards.J;
-
-                case "T":
-                    return (int)EnumCards.ValueCards.T;
-
-                default:
-                    return Convert.ToInt16(c);
-
-            }
+                "A" => (int)ValueCards.A,
+                "K" => (int)ValueCards.K,
+                "Q" => (int)ValueCards.Q,
+                "J" => (int)ValueCards.J,
+                "T" => (int)ValueCards.T,
+                _ => Convert.ToInt16(c)
+            };
         }
 
         public static string ConvertValueString(int c)
         {
-            switch (c)
+            return c switch
             {
-                case 13:
-                    return EnumCards.ValueCards.K.ToString();
-
-                case 14:
-                    return EnumCards.ValueCards.A.ToString();
-
-                case 12:
-                    return EnumCards.ValueCards.Q.ToString();
-
-                case 11:
-                    return EnumCards.ValueCards.J.ToString();
-
-                case 10:
-                    return EnumCards.ValueCards.T.ToString();
-
-                default:
-                    return c.ToString();
-
-            }
+                14 => ValueCards.A.ToString(),
+                13 => ValueCards.K.ToString(),
+                12 => ValueCards.Q.ToString(),
+                11 => ValueCards.J.ToString(),
+                10 => ValueCards.T.ToString(),
+                _ => c.ToString()
+            };
         }
     }
 }

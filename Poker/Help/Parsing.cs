@@ -1,77 +1,130 @@
 ﻿using Poker.Model;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Poker.Help
 {
     public static class Parsing
     {
-        const int INDEXTITLEGAME = 0;
-        const int INDEXBOARD = 1;
+        private const int IndexTypeGame = 0;
+        private const int IndexBoard = 1;
 
-        public static void ParsingFile(string[] arStr, out List<Game> games)
+        public static Game ParseGame(string input)
         {
-            string[] splitText;
-            games = new List<Game>();
+            var splitText = input.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            var players = new List<Player>();
+            Game game = null;
 
-            foreach (string line in arStr)
+            if (splitText.Length != 0)
             {
-                splitText = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-                List<Player> players = new List<Player>();
-
-                if (splitText.Length != 0)
+                GameType gameType;
+                List<Card> tableCards;
+                switch (splitText[IndexTypeGame])
                 {
-                    if (splitText[INDEXTITLEGAME].ToString() == "texas-holdem" || splitText[INDEXTITLEGAME].ToString() == "omaha-holdem")
-                    {
-                        for (int i = 2; i < splitText.Length; i++)
+                    case "texas-holdem":
+                        gameType = GameType.Holdem;
+                        tableCards = ParseCard(GameType.FiveCard, splitText, IndexBoard);
+                        if (tableCards != null)
                         {
-                            ParsingCard(splitText, i, out List<Card> cards);
-                            players.Add(new Player { Cards = cards });
+                            for (var i = 2; i < splitText.Length; i++)
+                            {
+                                var cards = ParseCard(gameType, splitText, i);
+                                players.Add(new Player { Cards = cards });
+                            }
+
+                            game = new Game
+                            {
+                                Type = gameType,
+                                Board = tableCards,
+                                Players = players
+                            };
+                        }
+                        else
+                        {
+                            Console.WriteLine("Error: Wrong table cards");
                         }
 
-                        ParsingCard(splitText, INDEXBOARD, out List<Card> card);
+                        break;
+                    case "omaha-holdem":
+                        {
+                            gameType = GameType.Omaha;
+                            tableCards = ParseCard(GameType.FiveCard, splitText, IndexBoard);
+                            if (tableCards != null)
+                            {
+                                for (var i = 2; i < splitText.Length; i++)
+                                {
+                                    var cards = ParseCard(gameType, splitText, i);
+                                    players.Add(new Player { Cards = cards });
+                                }
 
-                        games.Add(new Game
-                        {
-                            Title = splitText[INDEXTITLEGAME].ToString(),
-                            Board = card,
-                            Players = players
-                        });
-                    }
-                    else if (splitText[INDEXTITLEGAME].ToString() == "five-card-draw")
-                    {
-                        for (int i = 1; i < splitText.Length; i++)
-                        {
-                            ParsingCard(splitText, i, out List<Card> cards);
-                            players.Add(new Player { Cards = cards });
+                                game = new Game
+                                {
+                                    Type = gameType,
+                                    Board = tableCards,
+                                    Players = players
+                                };
+                            }
+                            else
+                            {
+                                Console.WriteLine("Error: Wrong table cards");
+                            }
+
+                            break;
                         }
-
-                        games.Add(new Game
+                    case "five-card-draw":
                         {
-                            Title = splitText[INDEXTITLEGAME].ToString(),
-                            Players = players
-                        });
-                    }
+                            gameType = GameType.FiveCard;
+                            for (int i = 1; i < splitText.Length; i++)
+                            {
+                                var cards = ParseCard(gameType, splitText, i);
+                                players.Add(new Player { Cards = cards });
+                            }
+
+                            game = new Game
+                            {
+                                Type = gameType,
+                                Players = players
+                            };
+                            break;
+                        }
+                    default:
+                        Console.WriteLine("Error: Invalid game type");
+                        break;
                 }
-                else 
-                {
-                    Console.WriteLine("Error: Null string");
-                }
-                
             }
+            else
+            {
+                Console.WriteLine("Error: Empty string");
+            }
+
+            return game;
         }
 
-        public static void ParsingCard(string[] splitText, int i, out List<Card> card)
+        private static List<Card> ParseCard(GameType type, string[] splitText, int i)
         {
-            char[] chars = splitText[i].ToCharArray();
-            card = new List<Card>();
-            int kBoard;
-            for (int j = 0; j < splitText[i].Length; j = j + 2)
+            var cardCount = type switch
             {
-                kBoard = j + 1;
-                card.Add(new Card { Value = Converts.ConvertValue(chars[j].ToString()), Suits = chars[kBoard].ToString() });
+                GameType.Holdem => 2,
+                GameType.Omaha => 4,
+                GameType.FiveCard => 5,
+                _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
+            };
+
+            var chars = splitText[i].ToCharArray();
+
+            if (cardCount * 2 != chars.Length)
+            {
+                return null;
             }
+
+            var card = new List<Card>();
+            for (var j = 0; j < cardCount * 2; j = j + 2)
+            {
+                card.Add(new Card
+                { Value = Converts.ConvertValue(chars[j].ToString()), Suit = chars[j + 1] });
+            }
+
+            return card;
         }
     }
 }
