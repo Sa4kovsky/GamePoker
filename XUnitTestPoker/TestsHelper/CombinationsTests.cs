@@ -1,5 +1,7 @@
 ﻿using Poker.Model;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace XUnitTestPoker.TestsHelper
@@ -7,6 +9,133 @@ namespace XUnitTestPoker.TestsHelper
     public class CombinationsTests
     {
         [Fact]
+        public void GetBoardCombinationsTest()
+        {
+            // Arrange
+            var playerCards = new List<Card>();
+            playerCards.Add(new Card { Value = 1, Suit = 'd' });
+            playerCards.Add(new Card { Value = 2, Suit = 'd' });
+            playerCards.Add(new Card { Value = 3, Suit = 'd' });
+            playerCards.Add(new Card { Value = 4, Suit = 'd' });
+
+            var expected = new List<List<Card>>();
+            var card = new List<Card>();
+            card.Add(new Card { Value = 1, Suit = 'd' });
+            card.Add(new Card { Value = 2, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 1, Suit = 'd' });
+            card.Add(new Card { Value = 3, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 1, Suit = 'd' });
+            card.Add(new Card { Value = 4, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 2, Suit = 'd' });
+            card.Add(new Card { Value = 3, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 2, Suit = 'd' });
+            card.Add(new Card { Value = 4, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 3, Suit = 'd' });
+            card.Add(new Card { Value = 4, Suit = 'd' });
+            expected.Add(card);
+
+            // Act
+            var actual = Poker.Help.Сombinations.GetHandCombinations(playerCards);
+
+            // Assert
+            for (var i = 0; i < expected.Count; i++)
+            {
+                for (var j = 0; j < expected[i].Count; j++)
+                {
+                    Assert.Equal(expected[i][j].Value, actual[i][j].Value);
+                    Assert.Equal(expected[i][j].Suit, actual[i][j].Suit);
+                }
+            }
+        }
+
+        [Fact]
+        public void GetHandCombinationsTest()
+        {
+            // Arrange
+            var board = new List<Card>();
+            board.Add(new Card { Value = 1, Suit = 'd' });
+            board.Add(new Card { Value = 2, Suit = 'd' });
+            board.Add(new Card { Value = 3, Suit = 'd' });
+            board.Add(new Card { Value = 4, Suit = 'd' });
+            board.Add(new Card { Value = 5, Suit = 'd' });
+
+            var expected = new List<List<Card>>();
+            var card = new List<Card>();
+            card.Add(new Card { Value = 3, Suit = 'd' });
+            card.Add(new Card { Value = 4, Suit = 'd' });
+            card.Add(new Card { Value = 5, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 2, Suit = 'd' });
+            card.Add(new Card { Value = 4, Suit = 'd' });
+            card.Add(new Card { Value = 5, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 2, Suit = 'd' });
+            card.Add(new Card { Value = 3, Suit = 'd' });
+            card.Add(new Card { Value = 5, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 2, Suit = 'd' });
+            card.Add(new Card { Value = 3, Suit = 'd' });
+            card.Add(new Card { Value = 4, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 1, Suit = 'd' });
+            card.Add(new Card { Value = 4, Suit = 'd' });
+            card.Add(new Card { Value = 5, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 1, Suit = 'd' });
+            card.Add(new Card { Value = 3, Suit = 'd' });
+            card.Add(new Card { Value = 5, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 1, Suit = 'd' });
+            card.Add(new Card { Value = 3, Suit = 'd' });
+            card.Add(new Card { Value = 4, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 1, Suit = 'd' });
+            card.Add(new Card { Value = 2, Suit = 'd' });
+            card.Add(new Card { Value = 5, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 1, Suit = 'd' });
+            card.Add(new Card { Value = 2, Suit = 'd' });
+            card.Add(new Card { Value = 4, Suit = 'd' });
+            expected.Add(card);
+            card = new List<Card>();
+            card.Add(new Card { Value = 1, Suit = 'd' });
+            card.Add(new Card { Value = 2, Suit = 'd' });
+            card.Add(new Card { Value = 3, Suit = 'd' });
+            expected.Add(card);
+
+            // Act
+            var actual = Poker.Help.Сombinations.GetBoardCombinations(board);
+
+            // Assert
+            for (var i = 0; i < expected.Count; i++)
+            {
+                for (var j = 0; j < expected[i].Count; j++)
+                {
+                    Assert.Equal(expected[i][j].Value, actual[i][j].Value);
+                    Assert.Equal(expected[i][j].Suit, actual[i][j].Suit);
+                }
+            }
+        }
+
+       [Fact]
         //Defining Flush
         public void FlushTest()
         {
@@ -195,10 +324,9 @@ namespace XUnitTestPoker.TestsHelper
             }
         }
 
-
         [Fact]
         //Defining Straight
-        public void Straight()
+        public void StraightTest()
         {
             // Arrange
             var playerCards = new List<Card>();
@@ -225,6 +353,309 @@ namespace XUnitTestPoker.TestsHelper
 
             // Act
             var actual = Poker.Help.Сombinations.Straight(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards), new List<ResultGame>());
+
+            // Assert
+            for (var i = 0; i < expected.Count; i++)
+            {
+                Assert.Equal(expected[i].HandValue, actual[i].HandValue);
+                for (var j = 0; j < expected[i].ResultHand.Count; j++)
+                {
+                    Assert.Equal(expected[i].ResultHand[j].Value, actual[i].ResultHand[j].Value);
+                    Assert.Equal(expected[i].ResultHand[j].Suit, actual[i].ResultHand[j].Suit);
+                }
+                for (var k = 0; k < expected[i].PlayerCards.Count; k++)
+                {
+                    Assert.Equal(expected[i].PlayerCards[k].Value, actual[i].PlayerCards[k].Value);
+                    Assert.Equal(expected[i].PlayerCards[k].Suit, actual[i].PlayerCards[k].Suit);
+                }
+            }
+        }
+
+        [Fact]
+        //Defining FourKind
+        public void FourKindTest()
+        {
+            // Arrange
+            var playerCards = new List<Card>();
+            playerCards.Add(new Card { Value = 4, Suit = 'd' });
+            playerCards.Add(new Card { Value = 2, Suit = 's' });
+
+            var handCards = new List<Card>();
+            handCards.Add(new Card { Value = 2, Suit = 'd' });
+            handCards.Add(new Card { Value = 2, Suit = 'c' });
+            handCards.Add(new Card { Value = 2, Suit = 'h' });
+            handCards.Add(new Card { Value = 3, Suit = 'd' });
+            handCards.Add(new Card { Value = 5, Suit = 'h' });
+            handCards.AddRange(playerCards);
+
+            var resultHand = new List<Card>();
+            resultHand.Add(new Card { Value = 2, Suit = 'd' });
+            resultHand.Add(new Card { Value = 2, Suit = 'c' });
+            resultHand.Add(new Card { Value = 2, Suit = 'h' });
+            resultHand.Add(new Card { Value = 2, Suit = 's' });
+            resultHand.Add(new Card { Value = 5, Suit = 'h' });
+
+            var expected = new List<ResultGame>();
+            expected.Add(new ResultGame { HandValue = 8, PlayerCards = playerCards, ResultHand = resultHand });
+
+            var combinations = Poker.Help.Сombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
+            var max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
+                .ToList();
+
+            // Act
+            var actual = Poker.Help.Сombinations.FourKind(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards), max, new List<ResultGame>());
+
+            // Assert
+            for (var i = 0; i < expected.Count; i++)
+            {
+                Assert.Equal(expected[i].HandValue, actual[i].HandValue);
+                for (var j = 0; j < expected[i].ResultHand.Count; j++)
+                {
+                    Assert.Equal(expected[i].ResultHand[j].Value, actual[i].ResultHand[j].Value);
+                    Assert.Equal(expected[i].ResultHand[j].Suit, actual[i].ResultHand[j].Suit);
+                }
+                for (var k = 0; k < expected[i].PlayerCards.Count; k++)
+                {
+                    Assert.Equal(expected[i].PlayerCards[k].Value, actual[i].PlayerCards[k].Value);
+                    Assert.Equal(expected[i].PlayerCards[k].Suit, actual[i].PlayerCards[k].Suit);
+                }
+            }
+        }
+
+        [Fact]
+        //Defining FullHouse
+        public void FullHouseTest()
+        {
+            // Arrange
+            var playerCards = new List<Card>();
+            playerCards.Add(new Card { Value = 3, Suit = 'd' });
+            playerCards.Add(new Card { Value = 2, Suit = 'h' });
+
+            var handCards = new List<Card>();
+            handCards.Add(new Card { Value = 2, Suit = 'd' });
+            handCards.Add(new Card { Value = 2, Suit = 'c' });
+            handCards.Add(new Card { Value = 4, Suit = 'h' });
+            handCards.Add(new Card { Value = 3, Suit = 'c' });
+            handCards.Add(new Card { Value = 5, Suit = 'h' });
+            handCards.AddRange(playerCards);
+
+            var resultHand = new List<Card>();
+            resultHand.Add(new Card { Value = 2, Suit = 'd' });
+            resultHand.Add(new Card { Value = 2, Suit = 'c' });
+            resultHand.Add(new Card { Value = 2, Suit = 'h' });
+            resultHand.Add(new Card { Value = 3, Suit = 'c' });
+            resultHand.Add(new Card { Value = 3, Suit = 'd' });
+
+            var expected = new List<ResultGame>();
+            expected.Add(new ResultGame { HandValue = 7, PlayerCards = playerCards, ResultHand = resultHand });
+
+            var combinations = Poker.Help.Сombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
+            var max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
+                .ToList();
+
+            // Act
+            var actual = Poker.Help.Сombinations.FullHouseORThreeKind(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards), combinations, max, new List<ResultGame>());
+
+            // Assert
+            for (var i = 0; i < expected.Count; i++)
+            {
+                Assert.Equal(expected[i].HandValue, actual[i].HandValue);
+                for (var j = 0; j < expected[i].ResultHand.Count; j++)
+                {
+                    Assert.Equal(expected[i].ResultHand[j].Value, actual[i].ResultHand[j].Value);
+                    Assert.Equal(expected[i].ResultHand[j].Suit, actual[i].ResultHand[j].Suit);
+                }
+                for (var k = 0; k < expected[i].PlayerCards.Count; k++)
+                {
+                    Assert.Equal(expected[i].PlayerCards[k].Value, actual[i].PlayerCards[k].Value);
+                    Assert.Equal(expected[i].PlayerCards[k].Suit, actual[i].PlayerCards[k].Suit);
+                }
+            }
+        }
+
+        [Fact]
+        //Defining Three Kind
+        public void ThreeKindTest() 
+        {
+            // Arrange
+            var playerCards = new List<Card>();
+            playerCards.Add(new Card { Value = 8, Suit = 'd' });
+            playerCards.Add(new Card { Value = 2, Suit = 'h' });
+
+            var handCards = new List<Card>();
+            handCards.Add(new Card { Value = 2, Suit = 'd' });
+            handCards.Add(new Card { Value = 2, Suit = 'c' });
+            handCards.Add(new Card { Value = 4, Suit = 'h' });
+            handCards.Add(new Card { Value = 3, Suit = 'c' });
+            handCards.Add(new Card { Value = 5, Suit = 'h' });
+            handCards.AddRange(playerCards);
+
+            var resultHand = new List<Card>();
+            resultHand.Add(new Card { Value = 2, Suit = 'd' });
+            resultHand.Add(new Card { Value = 2, Suit = 'c' });
+            resultHand.Add(new Card { Value = 2, Suit = 'h' });
+            resultHand.Add(new Card { Value = 8, Suit = 'd' });
+            resultHand.Add(new Card { Value = 5, Suit = 'h' });
+
+            var expected = new List<ResultGame>();
+            expected.Add(new ResultGame { HandValue = 4, PlayerCards = playerCards, ResultHand = resultHand });
+
+            var combinations = Poker.Help.Сombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
+            var max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
+                .ToList();
+
+            // Act
+            var actual = Poker.Help.Сombinations.FullHouseORThreeKind(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards), combinations, max, new List<ResultGame>());
+
+            // Assert
+            for (var i = 0; i < expected.Count; i++)
+            {
+                Assert.Equal(expected[i].HandValue, actual[i].HandValue);
+                for (var j = 0; j < expected[i].ResultHand.Count; j++)
+                {
+                    Assert.Equal(expected[i].ResultHand[j].Value, actual[i].ResultHand[j].Value);
+                    Assert.Equal(expected[i].ResultHand[j].Suit, actual[i].ResultHand[j].Suit);
+                }
+                for (var k = 0; k < expected[i].PlayerCards.Count; k++)
+                {
+                    Assert.Equal(expected[i].PlayerCards[k].Value, actual[i].PlayerCards[k].Value);
+                    Assert.Equal(expected[i].PlayerCards[k].Suit, actual[i].PlayerCards[k].Suit);
+                }
+            }
+        }
+
+        [Fact]
+        //Defining Two Pairs
+        public void TwoPairsTest()
+        { 
+            // Arrange
+            var playerCards = new List<Card>();
+            playerCards.Add(new Card { Value = 8, Suit = 'd' });
+            playerCards.Add(new Card { Value = 2, Suit = 'h' });
+
+            var handCards = new List<Card>();
+            handCards.Add(new Card { Value = 2, Suit = 'd' });
+            handCards.Add(new Card { Value = 6, Suit = 'c' });
+            handCards.Add(new Card { Value = 4, Suit = 'h' });
+            handCards.Add(new Card { Value = 3, Suit = 'c' });
+            handCards.Add(new Card { Value = 8, Suit = 'h' });
+            handCards.AddRange(playerCards);
+
+            var resultHand = new List<Card>();
+            resultHand.Add(new Card { Value = 8, Suit = 'h' });
+            resultHand.Add(new Card { Value = 8, Suit = 'd' });
+            resultHand.Add(new Card { Value = 2, Suit = 'd' });
+            resultHand.Add(new Card { Value = 2, Suit = 'h' });
+            resultHand.Add(new Card { Value = 6, Suit = 'c' });
+
+            var expected = new List<ResultGame>();
+            expected.Add(new ResultGame { HandValue = 3, PlayerCards = playerCards, ResultHand = resultHand });
+
+            var combinations = Poker.Help.Сombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
+            var max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
+                .ToList();
+
+            // Act
+            var actual = Poker.Help.Сombinations.TwoPairsORPairs(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards), combinations, max, new List<ResultGame>());
+
+            // Assert
+            for (var i = 0; i < expected.Count; i++)
+            {
+                Assert.Equal(expected[i].HandValue, actual[i].HandValue);
+                for (var j = 0; j < expected[i].ResultHand.Count; j++)
+                {
+                    Assert.Equal(expected[i].ResultHand[j].Value, actual[i].ResultHand[j].Value);
+                    Assert.Equal(expected[i].ResultHand[j].Suit, actual[i].ResultHand[j].Suit);
+                }
+                for (var k = 0; k < expected[i].PlayerCards.Count; k++)
+                {
+                    Assert.Equal(expected[i].PlayerCards[k].Value, actual[i].PlayerCards[k].Value);
+                    Assert.Equal(expected[i].PlayerCards[k].Suit, actual[i].PlayerCards[k].Suit);
+                }
+            }
+        }
+
+        [Fact]
+        //Defining Pairs
+        public void PairsTest()
+        {
+            // Arrange
+            var playerCards = new List<Card>();
+            playerCards.Add(new Card { Value = 8, Suit = 'd' });
+            playerCards.Add(new Card { Value = 9, Suit = 'h' });
+
+            var handCards = new List<Card>();
+            handCards.Add(new Card { Value = 2, Suit = 'd' });
+            handCards.Add(new Card { Value = 6, Suit = 'c' });
+            handCards.Add(new Card { Value = 10, Suit = 'h' });
+            handCards.Add(new Card { Value = 3, Suit = 'c' });
+            handCards.Add(new Card { Value = 8, Suit = 'h' });
+            handCards.AddRange(playerCards);
+
+            var resultHand = new List<Card>();
+            resultHand.Add(new Card { Value = 8, Suit = 'h' });
+            resultHand.Add(new Card { Value = 8, Suit = 'd' });
+            resultHand.Add(new Card { Value = 10, Suit = 'h' });
+            resultHand.Add(new Card { Value = 9, Suit = 'h' });
+            resultHand.Add(new Card { Value = 6, Suit = 'c' });
+
+            var expected = new List<ResultGame>();
+            expected.Add(new ResultGame { HandValue = 2, PlayerCards = playerCards, ResultHand = resultHand });
+
+            var combinations = Poker.Help.Сombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
+            var max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
+                .ToList();
+
+            // Act
+            var actual = Poker.Help.Сombinations.TwoPairsORPairs(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards), combinations, max, new List<ResultGame>());
+
+            // Assert
+            for (var i = 0; i < expected.Count; i++)
+            {
+                Assert.Equal(expected[i].HandValue, actual[i].HandValue);
+                for (var j = 0; j < expected[i].ResultHand.Count; j++)
+                {
+                    Assert.Equal(expected[i].ResultHand[j].Value, actual[i].ResultHand[j].Value);
+                    Assert.Equal(expected[i].ResultHand[j].Suit, actual[i].ResultHand[j].Suit);
+                }
+                for (var k = 0; k < expected[i].PlayerCards.Count; k++)
+                {
+                    Assert.Equal(expected[i].PlayerCards[k].Value, actual[i].PlayerCards[k].Value);
+                    Assert.Equal(expected[i].PlayerCards[k].Suit, actual[i].PlayerCards[k].Suit);
+                }
+            }
+        }
+
+        [Fact]
+        //Defining older hand
+        public void SearchOlderTest()
+        {
+            // Arrange
+            var playerCards = new List<Card>();
+            playerCards.Add(new Card { Value = 8, Suit = 'd' });
+            playerCards.Add(new Card { Value = 9, Suit = 'h' });
+
+            var handCards = new List<Card>();
+            handCards.Add(new Card { Value = 2, Suit = 'd' });
+            handCards.Add(new Card { Value = 6, Suit = 'c' });
+            handCards.Add(new Card { Value = 10, Suit = 'h' });
+            handCards.Add(new Card { Value = 3, Suit = 'c' });
+            handCards.Add(new Card { Value = 13, Suit = 'h' });
+            handCards.AddRange(playerCards);
+
+            var resultHand = new List<Card>();
+            resultHand.Add(new Card { Value = 13, Suit = 'h' });
+            resultHand.Add(new Card { Value = 10, Suit = 'h' });
+            resultHand.Add(new Card { Value = 9, Suit = 'h' });
+            resultHand.Add(new Card { Value = 8, Suit = 'd' });
+            resultHand.Add(new Card { Value = 6, Suit = 'c' });
+
+            var expected = new List<ResultGame>();
+            expected.Add(new ResultGame { HandValue = 1, PlayerCards = playerCards, ResultHand = resultHand });
+
+
+            // Act
+            var actual = Poker.Help.Сombinations.SearchOlder(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards), new List<ResultGame>());
 
             // Assert
             for (var i = 0; i < expected.Count; i++)

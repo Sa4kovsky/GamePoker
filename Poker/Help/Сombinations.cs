@@ -69,59 +69,58 @@ namespace Poker.Help
                     break;
                 case GameType.Omaha:
                     var playerPairs = GetHandCombinations(playerCards);
+                    var boardPairs = GetBoardCombinations(board);
 
-                    foreach (List<Card> e in playerPairs)
+                    foreach (var e in playerPairs)
                     {
-                        handCards = new List<Card>(board);
-
-                        foreach (Card c in e)
+                        foreach (var p in boardPairs)
                         {
-                            handCards.Add(new Card { Suit = c.Suit, Value = c.Value });
-                        }
+                            handCards = new List<Card>(p);
 
-                        preliminaryResult = Flush(playerCards, SortCardsBySuit(handCards), preliminaryResult);
+                            handCards.AddRange(e);
 
-                        if (preliminaryResult.Count != 0 && preliminaryResult[0].HandValue == 6)
-                        {
-                            preliminaryResult = StraightFlush(playerCards, SortCardsByValue(handCards), preliminaryResult);
-                        }
+                            preliminaryResult = Flush(playerCards, SortCardsBySuit(handCards), preliminaryResult);
 
-                        preliminaryResult = Straight(playerCards, SortCardsByValue(handCards), preliminaryResult);
-
-                        combinations = SearchMatch(playerCards, SortCardsByValue(handCards));
-                        max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
-                            .ToList();
-
-                        if (max.Count != 0)
-                        {
-                            switch (5 - max[0].ResultHand.Count)
+                            if (preliminaryResult.Count != 0 && preliminaryResult[0].HandValue == 6)
                             {
-                                case 1:
-                                    {
-                                        preliminaryResult = FourKind(playerCards, SortCardsByValue(handCards), max, preliminaryResult);
-                                        break;
-                                    }
-
-                                case 2:
-                                    {
-                                        preliminaryResult = FullHouseORThreeKind(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
-                                        break;
-                                    }
-
-                                case 3:
-                                    {
-                                        preliminaryResult = TwoPairsORPairs(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
-                                        break;
-                                    }
+                                preliminaryResult = StraightFlush(playerCards, SortCardsByValue(handCards), preliminaryResult);
                             }
-                        }
-                        else
-                        {
-                            preliminaryResult = SearchOlder(playerCards, SortCardsByValue(handCards), preliminaryResult);
-                        }
 
-                        resultGame = preliminaryResult;
+                            preliminaryResult = Straight(playerCards, SortCardsByValue(handCards), preliminaryResult);
 
+                            combinations = SearchMatch(playerCards, SortCardsByValue(handCards));
+                            max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
+                                .ToList();
+
+                            if (max.Count != 0)
+                            {
+                                switch (5 - max[0].ResultHand.Count)
+                                {
+                                    case 1:
+                                        {
+                                            preliminaryResult = FourKind(playerCards, SortCardsByValue(handCards), max, preliminaryResult);
+                                            break;
+                                        }
+
+                                    case 2:
+                                        {
+                                            preliminaryResult = FullHouseORThreeKind(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
+                                            break;
+                                        }
+
+                                    case 3:
+                                        {
+                                            preliminaryResult = TwoPairsORPairs(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
+                                            break;
+                                        }
+                                }
+                            }
+                            else
+                            {
+                                preliminaryResult = SearchOlder(playerCards, SortCardsByValue(handCards), preliminaryResult);
+                            }
+                            resultGame = preliminaryResult;
+                        }
                     }
                     break;
                 case GameType.FiveCard:
@@ -194,6 +193,36 @@ namespace Poker.Help
             return cards;
         }
 
+        public static List<List<Card>> GetBoardCombinations(List<Card> board)
+        {
+            var boardCombinations = new List<List<Card>>();
+            var combinationCard = new List<Card>();
+            for (var i = 0; i < board.Count; i++)
+            {
+                var card = new List<Card>(board);
+                for (var j = i; j < board.Count-1; j++)
+                {
+                    card.Remove(card[i]);
+                    card.Remove(card[j]);
+                    combinationCard.AddRange(card);
+                    card.Clear();
+                    card.AddRange(board);
+                }
+            }
+            
+            for (var i = 0; i < combinationCard.Count; i=i+3)
+            {
+                var combination = new List<Card>();
+                for (var j = 0 + i; j < 3 + i; j++)
+                {
+                    combination.Add(new Card { Value = combinationCard[j].Value, Suit = combinationCard[j].Suit });
+                }
+                boardCombinations.Add(combination);
+            }
+
+            return boardCombinations;
+        }
+
         public static List<ResultGame> Flush (List<Card> playerCards, List<Card> handCards, List<ResultGame> resultGame)
         {
             for (int i = 0; i < handCards.Count - 4; i++)
@@ -227,7 +256,7 @@ namespace Poker.Help
                         }
                         else
                         {
-                            resultGame = ResultConverterCards(resultHandValue: 9, i - 2, playerCards, handCards, resultGame);
+                            resultGame = ResultConverterCards(resultHandValue: 9, i - 3, playerCards, handCards, resultGame);
                             break;
                         }
                     }
