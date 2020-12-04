@@ -122,6 +122,7 @@ namespace Poker.Help
                             resultGame = preliminaryResult;
                         }
                     }
+                 
                     break;
                 case GameType.FiveCard:
                     handCards = new List<Card>();

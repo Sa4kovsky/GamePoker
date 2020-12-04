@@ -1,6 +1,7 @@
 ﻿using Poker.Model;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Poker.Help
 {
@@ -14,6 +15,7 @@ namespace Poker.Help
             var splitText = input.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
             var players = new List<Player>();
             Game game = null;
+            bool error = false;
 
             if (splitText.Length != 0)
             {
@@ -29,15 +31,31 @@ namespace Poker.Help
                             for (var i = 2; i < splitText.Length; i++)
                             {
                                 var cards = ParseCard(gameType, splitText, i);
-                                players.Add(new Player { Cards = cards });
+                                if (cards != null)
+                                {
+                                    players.Add(new Player { Cards = cards });
+                                }
+                                else 
+                                {
+                                    Console.WriteLine("Error: Invalid card");
+                                    error = true;
+                                    break;
+                                }
                             }
-
-                            game = new Game
+                            if (error)
                             {
-                                Type = gameType,
-                                Board = tableCards,
-                                Players = players
-                            };
+                                game = null;
+                            }
+                            else 
+                            { 
+
+                                game = new Game
+                                {
+                                    Type = gameType,
+                                    Board = tableCards,
+                                    Players = players
+                                };
+                            }
                         }
                         else
                         {
@@ -54,15 +72,30 @@ namespace Poker.Help
                                 for (var i = 2; i < splitText.Length; i++)
                                 {
                                     var cards = ParseCard(gameType, splitText, i);
-                                    players.Add(new Player { Cards = cards });
+                                    if (cards != null)
+                                    {
+                                        players.Add(new Player { Cards = cards });
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine("Error: Invalid card");
+                                        error = true;
+                                        break;
+                                    }
                                 }
-
-                                game = new Game
+                                if (error)
                                 {
-                                    Type = gameType,
-                                    Board = tableCards,
-                                    Players = players
-                                };
+                                    game = null;
+                                }
+                                else
+                                {
+                                    game = new Game
+                                    {
+                                        Type = gameType,
+                                        Board = tableCards,
+                                        Players = players
+                                    };
+                                } 
                             }
                             else
                             {
@@ -77,14 +110,28 @@ namespace Poker.Help
                             for (int i = 1; i < splitText.Length; i++)
                             {
                                 var cards = ParseCard(gameType, splitText, i);
-                                players.Add(new Player { Cards = cards });
+                                if (cards != null)
+                                {
+                                    players.Add(new Player { Cards = cards });
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Error: Invalid card");
+                                    error = true;
+                                    break;
+                                }
                             }
-
-                            game = new Game
+                            if (error)
                             {
-                                Type = gameType,
-                                Players = players
-                            };
+                                game = null;
+                            }
+                            {
+                                game = new Game
+                                {
+                                    Type = gameType,
+                                    Players = players
+                                };
+                            }
                             break;
                         }
                     default:
@@ -120,10 +167,23 @@ namespace Poker.Help
             var card = new List<Card>();
             for (var j = 0; j < cardCount * 2; j = j + 2)
             {
-                card.Add(new Card
-                { Value = Converts.ConvertValue(chars[j].ToString()), Suit = chars[j + 1] });
+                if (chars[j + 1] == 'h' || chars[j + 1] == 'd' || chars[j + 1] == 'c' || chars[j + 1] == 's')
+                {
+                    if (Converts.ConvertValue(chars[j].ToString()) != 0)
+                    {
+                        card.Add(new Card
+                        { Value = Converts.ConvertValue(chars[j].ToString()), Suit = chars[j + 1] });
+                    }
+                    else 
+                    {
+                        return null;
+                    }
+                }
+                else 
+                {
+                    return null;
+                }
             }
-
             return card;
         }
     }

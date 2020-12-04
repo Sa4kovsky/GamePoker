@@ -8,6 +8,7 @@
 
 # Visual Studio cache/options directory
 .vs/
+*.vs/
 
 # Build results
 
@@ -46,6 +47,8 @@ x64/
 *.log
 *.svclog
 *.scc
+*.ide
+*.dtbcashe
 
 
 # Visual C++ cache files

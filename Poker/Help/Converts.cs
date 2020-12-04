@@ -7,15 +7,23 @@ namespace Poker.Help
     {
         public static int ConvertValue(string c)
         {
-            return c switch
+            bool isNumerical = int.TryParse(c.ToString(), out int i);
+            if (isNumerical == true || c == "A" ||  c == "K" || c == "Q" || c == "J" || c == "T")
             {
-                "A" => (int)ValueCards.A,
-                "K" => (int)ValueCards.K,
-                "Q" => (int)ValueCards.Q,
-                "J" => (int)ValueCards.J,
-                "T" => (int)ValueCards.T,
-                _ => Convert.ToInt16(c)
-            };
+                return c switch
+                {
+                    "A" => (int)ValueCards.A,
+                    "K" => (int)ValueCards.K,
+                    "Q" => (int)ValueCards.Q,
+                    "J" => (int)ValueCards.J,
+                    "T" => (int)ValueCards.T,
+                    _ => Convert.ToInt16(c)
+                };
+            }
+            else 
+            {
+                return 0;
+            }
         }
 
         public static string ConvertValueString(int c)
