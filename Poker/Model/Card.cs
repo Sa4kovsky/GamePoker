@@ -7,6 +7,6 @@ namespace Poker.Model
     public class Card
     {
         public int Value { get; set; }
-        public string Suits { get; set; }
+        public char Suit { get; set; }
     }
 }

@@ -1,64 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using Poker.Model;
 using Poker.Help;
 using System.Linq;
+using static Poker.Help.SortHandCards;
 
 namespace Poker
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            string[] arStr = File.ReadAllLines(@"C:\Users\sachkovski.ev\Desktop\poker.txt");
-
-            Parsing.ParsingFile(/*File.ReadAllLines(args[0])*/arStr, out List<Game> games);
-
-            foreach (Game game in games)
+            string input;
+            while ((input = Console.ReadLine()) != null)
             {
-                //Console.Write(game.Title + " ");
-                List<ResultGame> resultGame = new List<ResultGame>();
-                foreach (Player player in game.Players)
-                {
-                    Сombinations.Flush(game.Title, game.Board, player.Cards, resultGame);
-                }
+                var game = Parsing.ParseGame(input);
+                var resultGame = new List<ResultGame>();
 
-                var result = resultGame.OrderBy(x => x.HandValue).ThenBy(y => y.ResultHand[0].Value).ThenBy(y => y.ResultHand[1].Value).ThenBy(y => y.ResultHand[2].Value).ThenBy(y => y.ResultHand[3].Value).ThenBy(y => y.ResultHand[4].Value).ThenBy(y => y.PlayerCards[0].Suits).ThenBy(y => y.PlayerCards[1].Suits).ToList();
-                for (int i = 0; i < result.Count(); i++)
+                if (game != null)
                 {
-                    string s = "";
-                    foreach (Card playerCard in result[i].PlayerCards)
+                    foreach (var player in game.Players)
                     {
-                        s += Converts.ConvertValueString(playerCard.Value) + playerCard.Suits;
+                        resultGame.AddRange(Сombinations.DefinitionCombinations(game.Type, game.Board, player.Cards));
                     }
 
-                    if (i < result.Count()-1 && result[i].HandValue == result[i + 1].HandValue && result[i].ResultHand[1].Value == result[i + 1].ResultHand[1].Value && result[i].ResultHand[2].Value == result[i + 1].ResultHand[2].Value && result[i].ResultHand[3].Value == result[i + 1].ResultHand[3].Value && result[i].ResultHand[4].Value == result[i + 1].ResultHand[4].Value)
+                    var result = SortCardsResult(resultGame);
+                    for (var i = 0; i < result.Count; i++)
                     {
-                        Console.Write(s + "=");
+                        var s = result[i].PlayerCards.Aggregate("", (current, playerCard) => current + Converts.ConvertValueString(playerCard.Value) + playerCard.Suit);
+
+                        if (i < result.Count - 1 && result[i].HandValue == result[i + 1].HandValue &&
+                            result[i].ResultHand[0].Value == result[i + 1].ResultHand[0].Value &&
+                            result[i].ResultHand[1].Value == result[i + 1].ResultHand[1].Value &&
+                            result[i].ResultHand[2].Value == result[i + 1].ResultHand[2].Value &&
+                            result[i].ResultHand[3].Value == result[i + 1].ResultHand[3].Value &&
+                            result[i].ResultHand[4].Value == result[i + 1].ResultHand[4].Value
+                        )
+                        {
+                            Console.Write(s + "=");
+                        }
+                        else if (i < result.Count() - 1)
+                        {
+                            Console.Write(s + " ");
+                        }
+                        else
+                        {
+                            Console.Write(s);
+                        }
                     }
-                    else 
-                    {
-                        Console.Write(s + " ");
-                    }
+                    Console.WriteLine();
+
                 }
-                Console.WriteLine();
-                /*
-                                foreach (ResultGame e in resultGame.OrderBy(x => x.HandValue).ThenBy(y => y.ResultHand[0].Value).ThenBy(y => y.ResultHand[1].Value).ThenBy(y => y.ResultHand[2].Value).ThenBy(y => y.ResultHand[3].Value).ThenBy(y => y.ResultHand[4].Value).ThenBy(y => y.PlayerCards[1].Suits))
-                                                {
-                                                    string s = "", h = "";
-                                                    foreach (Card playerCard in e.PlayerCards)
-                                                    {
-                                                        s += playerCard.Value + playerCard.Suits;
-                                                    }
-                                                    foreach (Card handCard in e.ResultHand)
-                                                    {
-                                                        h += handCard.Value + handCard.Suits;
-                                                    }
-                                                    Console.WriteLine(s + " " + h + " " + e.HandValue);
-                                                }*/
             }
-            Console.ReadLine();
         }
     }
 }

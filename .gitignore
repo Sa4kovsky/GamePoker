@@ -6,6 +6,10 @@
 *.user
 *.sln.docstates
 
+# Visual Studio cache/options directory
+.vs/
+*.vs/
+
 # Build results
 
 [Dd]ebug/
@@ -43,6 +47,9 @@ x64/
 *.log
 *.svclog
 *.scc
+*.ide
+*.dtbcashe
+
 
 # Visual C++ cache files
 ipch/
