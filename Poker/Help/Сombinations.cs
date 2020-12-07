@@ -57,8 +57,8 @@ namespace Poker.Help
 
         /// <summary>
         /// Find best combinations
-        /// Check Flush. If Flush then check StraightFlush, if StraightFlush then return resultGame
-        /// else check the rest combinations
+        /// Check Flush. If Flush then check StraightFlush, if StraightFlush then return resultGame,
+        /// check the rest combinations
         /// </summary>
         /// <param name="playerCards">Hand cards player</param>
         /// <param name="handCards">Table cards + player cards</param>
@@ -76,43 +76,41 @@ namespace Poker.Help
                 preliminaryResult = StraightFlush(playerCards, SortCardsByValue(handCards), preliminaryResult);
             }
 
-            if(preliminaryResult.Count != 0 && preliminaryResult[0].HandValue > 9)
+            preliminaryResult = Straight(playerCards, SortCardsByValue(handCards), preliminaryResult);
+
+            combinations = SearchMatch(playerCards, SortCardsByValue(handCards));
+            max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
+                .ToList();
+
+            if (max.Count != 0)
             {
-                preliminaryResult = Straight(playerCards, SortCardsByValue(handCards), preliminaryResult);
-
-                combinations = SearchMatch(playerCards, SortCardsByValue(handCards));
-                max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
-                    .ToList();
-
-                if (max.Count != 0)
+                switch (5 - max[0].ResultHand.Count)
                 {
-                    switch (5 - max[0].ResultHand.Count)
-                    {
-                        case 1:
-                            {
-                                preliminaryResult = FourKind(playerCards, SortCardsByValue(handCards), max, preliminaryResult);
-                                break;
-                            }
+                    case 1:
+                        {
+                            preliminaryResult = FourKind(playerCards, SortCardsByValue(handCards), max, preliminaryResult);
+                            break;
+                        }
 
-                        case 2:
-                            {
-                                preliminaryResult = FullHouseORThreeKind(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
-                                break;
-                            }
+                    case 2:
+                        {
+                            preliminaryResult = FullHouseORThreeKind(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
+                            break;
+                        }
 
-                        case 3:
-                            {
-                                preliminaryResult = TwoPairsORPairs(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
-                                break;
-                            }
-                    }
-                }
-                else
-                {
-                    preliminaryResult = SearchOlder(playerCards, SortCardsByValue(handCards), preliminaryResult);
+                    case 3:
+                        {
+                            preliminaryResult = TwoPairsORPairs(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
+                            break;
+                        }
                 }
             }
-          
+            else
+            {
+                preliminaryResult = SearchOlder(playerCards, SortCardsByValue(handCards), preliminaryResult);
+            }
+
+
             return preliminaryResult;
         }
 

@@ -69,6 +69,8 @@ artifacts/
 *.scc
 *.ide
 *.dtbcashe
+*.dtbcach
+*.lock
 
 # Visual C++ cache files
 ipch/
