@@ -24,13 +24,15 @@ namespace Poker.Help
         {
             var resultGame = new List<ResultGame>();
             List<Card> handCards;
+            var preliminaryResult = new List<ResultGame>();
 
             switch (type)
             {
                 case GameType.Holdem:
                     handCards = new List<Card>(board);
                     handCards.AddRange(playerCards);
-                    resultGame = DefineCombinations(playerCards, handCards);
+                    preliminaryResult = DefineCombinations(playerCards, handCards, preliminaryResult);
+                    resultGame = preliminaryResult;
                     break;
                 case GameType.Omaha:
                     var playerPairs = GetHandCombinations(playerCards);
@@ -42,14 +44,16 @@ namespace Poker.Help
                         {
                             handCards = new List<Card>(p);
                             handCards.AddRange(e);
-                            resultGame = DefineCombinations(playerCards, handCards);
+                            preliminaryResult = DefineCombinations(playerCards, handCards, preliminaryResult);
+                            resultGame = preliminaryResult;
                         }
                     }
                     break;
                 case GameType.FiveCard:
                     handCards = new List<Card>();
                     handCards.AddRange(playerCards);
-                    resultGame = DefineCombinations(playerCards, handCards);
+                    preliminaryResult = DefineCombinations(playerCards, handCards, preliminaryResult);
+                    resultGame = preliminaryResult;
                     break;
             }
             return resultGame;
@@ -63,11 +67,11 @@ namespace Poker.Help
         /// <param name="playerCards">Hand cards player</param>
         /// <param name="handCards">Table cards + player cards</param>
         /// <returns>The best result</returns>
-        public static List<ResultGame> DefineCombinations(List<Card> playerCards, List<Card> handCards)
+        public static List<ResultGame> DefineCombinations(List<Card> playerCards, List<Card> handCards, List<ResultGame> preliminaryResult)
         {
             List<ResultGame> combinations;
             List<ResultGame> max;
-            var preliminaryResult = new List<ResultGame>();
+         
 
             preliminaryResult = Flush(playerCards, SortCardsBySuit(handCards), preliminaryResult);
 
