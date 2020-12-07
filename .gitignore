@@ -13,14 +13,34 @@
 # Build results
 
 [Dd]ebug/
+[Dd]ebugPublic/
 [Rr]elease/
+[Rr]eleases/
 x64/
+x86/
+bld/
 [Bb]in/
 [Oo]bj/
+[Ll]og/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*
+
+# NUNIT
+*.VisualState.xml
+TestResult.xml
+
+# Build Results of an ATL Project
+[Dd]ebugPS/
+[Rr]eleasePS/
+dlldata.c
+
+# .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+**/Properties/launchSettings.json
 
 *_i.c
 *_p.c
@@ -50,7 +70,6 @@ x64/
 *.ide
 *.dtbcashe
 
-
 # Visual C++ cache files
 ipch/
 *.aps
@@ -63,6 +82,7 @@ ipch/
 *.psess
 *.vsp
 *.vspx
+*.sap
 
 # Guidance Automation Toolkit
 *.gpState

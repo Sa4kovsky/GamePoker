@@ -10,6 +10,7 @@ namespace Poker.Help
         private const int IndexTypeGame = 0;
         private const int IndexBoard = 1;
 
+        //Method generates the game type from the input string and (table cards and player cards) => to generate cards, the ParseCard method is called
         public static Game ParseGame(string input)
         {
             var splitText = input.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
@@ -147,6 +148,7 @@ namespace Poker.Help
             return game;
         }
 
+        //Method generates cards 
         private static List<Card> ParseCard(GameType type, string[] splitText, int i)
         {
             var cardCount = type switch

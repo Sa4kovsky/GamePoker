@@ -21,7 +21,7 @@ namespace Poker
                 {
                     foreach (var player in game.Players)
                     {
-                        resultGame.AddRange(Сombinations.DefinitionCombinations(game.Type, game.Board, player.Cards));
+                        resultGame.AddRange(Сombinations.DefineResult(game.Type, game.Board, player.Cards));
                     }
 
                     var result = SortCardsResult(resultGame);

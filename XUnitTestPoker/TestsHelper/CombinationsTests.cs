@@ -8,133 +8,6 @@ namespace XUnitTestPoker.TestsHelper
 {
     public class CombinationsTests
     {
-        [Fact]
-        public void GetBoardCombinationsTest()
-        {
-            // Arrange
-            var playerCards = new List<Card>();
-            playerCards.Add(new Card { Value = 1, Suit = 'd' });
-            playerCards.Add(new Card { Value = 2, Suit = 'd' });
-            playerCards.Add(new Card { Value = 3, Suit = 'd' });
-            playerCards.Add(new Card { Value = 4, Suit = 'd' });
-
-            var expected = new List<List<Card>>();
-            var card = new List<Card>();
-            card.Add(new Card { Value = 1, Suit = 'd' });
-            card.Add(new Card { Value = 2, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 1, Suit = 'd' });
-            card.Add(new Card { Value = 3, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 1, Suit = 'd' });
-            card.Add(new Card { Value = 4, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 2, Suit = 'd' });
-            card.Add(new Card { Value = 3, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 2, Suit = 'd' });
-            card.Add(new Card { Value = 4, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 3, Suit = 'd' });
-            card.Add(new Card { Value = 4, Suit = 'd' });
-            expected.Add(card);
-
-            // Act
-            var actual = Poker.Help.Сombinations.GetHandCombinations(playerCards);
-
-            // Assert
-            for (var i = 0; i < expected.Count; i++)
-            {
-                for (var j = 0; j < expected[i].Count; j++)
-                {
-                    Assert.Equal(expected[i][j].Value, actual[i][j].Value);
-                    Assert.Equal(expected[i][j].Suit, actual[i][j].Suit);
-                }
-            }
-        }
-
-        [Fact]
-        public void GetHandCombinationsTest()
-        {
-            // Arrange
-            var board = new List<Card>();
-            board.Add(new Card { Value = 1, Suit = 'd' });
-            board.Add(new Card { Value = 2, Suit = 'd' });
-            board.Add(new Card { Value = 3, Suit = 'd' });
-            board.Add(new Card { Value = 4, Suit = 'd' });
-            board.Add(new Card { Value = 5, Suit = 'd' });
-
-            var expected = new List<List<Card>>();
-            var card = new List<Card>();
-            card.Add(new Card { Value = 3, Suit = 'd' });
-            card.Add(new Card { Value = 4, Suit = 'd' });
-            card.Add(new Card { Value = 5, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 2, Suit = 'd' });
-            card.Add(new Card { Value = 4, Suit = 'd' });
-            card.Add(new Card { Value = 5, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 2, Suit = 'd' });
-            card.Add(new Card { Value = 3, Suit = 'd' });
-            card.Add(new Card { Value = 5, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 2, Suit = 'd' });
-            card.Add(new Card { Value = 3, Suit = 'd' });
-            card.Add(new Card { Value = 4, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 1, Suit = 'd' });
-            card.Add(new Card { Value = 4, Suit = 'd' });
-            card.Add(new Card { Value = 5, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 1, Suit = 'd' });
-            card.Add(new Card { Value = 3, Suit = 'd' });
-            card.Add(new Card { Value = 5, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 1, Suit = 'd' });
-            card.Add(new Card { Value = 3, Suit = 'd' });
-            card.Add(new Card { Value = 4, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 1, Suit = 'd' });
-            card.Add(new Card { Value = 2, Suit = 'd' });
-            card.Add(new Card { Value = 5, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 1, Suit = 'd' });
-            card.Add(new Card { Value = 2, Suit = 'd' });
-            card.Add(new Card { Value = 4, Suit = 'd' });
-            expected.Add(card);
-            card = new List<Card>();
-            card.Add(new Card { Value = 1, Suit = 'd' });
-            card.Add(new Card { Value = 2, Suit = 'd' });
-            card.Add(new Card { Value = 3, Suit = 'd' });
-            expected.Add(card);
-
-            // Act
-            var actual = Poker.Help.Сombinations.GetBoardCombinations(board);
-
-            // Assert
-            for (var i = 0; i < expected.Count; i++)
-            {
-                for (var j = 0; j < expected[i].Count; j++)
-                {
-                    Assert.Equal(expected[i][j].Value, actual[i][j].Value);
-                    Assert.Equal(expected[i][j].Suit, actual[i][j].Suit);
-                }
-            }
-        }
-
        [Fact]
         //Defining Flush
         public void FlushTest()
@@ -398,7 +271,7 @@ namespace XUnitTestPoker.TestsHelper
             var expected = new List<ResultGame>();
             expected.Add(new ResultGame { HandValue = 8, PlayerCards = playerCards, ResultHand = resultHand });
 
-            var combinations = Poker.Help.Сombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
+            var combinations = Poker.Help.HelpCombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
             var max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
                 .ToList();
 
@@ -449,7 +322,7 @@ namespace XUnitTestPoker.TestsHelper
             var expected = new List<ResultGame>();
             expected.Add(new ResultGame { HandValue = 7, PlayerCards = playerCards, ResultHand = resultHand });
 
-            var combinations = Poker.Help.Сombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
+            var combinations = Poker.Help.HelpCombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
             var max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
                 .ToList();
 
@@ -500,7 +373,7 @@ namespace XUnitTestPoker.TestsHelper
             var expected = new List<ResultGame>();
             expected.Add(new ResultGame { HandValue = 4, PlayerCards = playerCards, ResultHand = resultHand });
 
-            var combinations = Poker.Help.Сombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
+            var combinations = Poker.Help.HelpCombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
             var max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
                 .ToList();
 
@@ -551,7 +424,7 @@ namespace XUnitTestPoker.TestsHelper
             var expected = new List<ResultGame>();
             expected.Add(new ResultGame { HandValue = 3, PlayerCards = playerCards, ResultHand = resultHand });
 
-            var combinations = Poker.Help.Сombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
+            var combinations = Poker.Help.HelpCombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
             var max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
                 .ToList();
 
@@ -602,7 +475,7 @@ namespace XUnitTestPoker.TestsHelper
             var expected = new List<ResultGame>();
             expected.Add(new ResultGame { HandValue = 2, PlayerCards = playerCards, ResultHand = resultHand });
 
-            var combinations = Poker.Help.Сombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
+            var combinations = Poker.Help.HelpCombinations.SearchMatch(playerCards, Poker.Help.SortHandCards.SortCardsByValue(handCards));
             var max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
                 .ToList();
 

@@ -8,7 +8,7 @@ namespace Poker.Help
         public static int ConvertValue(string c)
         {
             bool isNumerical = int.TryParse(c.ToString(), out int i);
-            if (isNumerical == true || c == "A" ||  c == "K" || c == "Q" || c == "J" || c == "T")
+            if (isNumerical || c == "A" ||  c == "K" || c == "Q" || c == "J" || c == "T")
             {
                 return c switch
                 {

@@ -4,17 +4,25 @@ using System.Linq;
 
 using Poker.Model;
 using static Poker.Help.SortHandCards;
+using static Poker.Help.HelpCombinations;
 
 namespace Poker.Help
 {
     public static class Сombinations
     {
-        public static List<ResultGame> DefinitionCombinations(GameType type, List<Card> board, List<Card> playerCards)
+        /// <summary>
+        /// Define Result: 
+        /// 1. Сheck the type of the game. According to the game type, we add the player's cards to the table cards.
+        /// 2. Check combinations => calling method DefinitionCombinations
+        /// 3. Returning the best result
+        /// </summary>
+        /// <param name="type">Type game</param>
+        /// <param name="board">Table cards</param>
+        /// <param name="playerCards">Hand cards player</param>
+        /// <returns>The best result</returns>
+        public static List<ResultGame> DefineResult(GameType type, List<Card> board, List<Card> playerCards)
         {
             var resultGame = new List<ResultGame>();
-            var preliminaryResult = new List<ResultGame>();
-            List<ResultGame> combinations;
-            List<ResultGame> max;
             List<Card> handCards;
 
             switch (type)
@@ -22,50 +30,7 @@ namespace Poker.Help
                 case GameType.Holdem:
                     handCards = new List<Card>(board);
                     handCards.AddRange(playerCards);
-
-                    preliminaryResult = Flush(playerCards, SortCardsBySuit(handCards), preliminaryResult);
-
-                    if (preliminaryResult.Count != 0 && preliminaryResult[0].HandValue == 6)
-                    {
-                        preliminaryResult = StraightFlush(playerCards, SortCardsByValue(handCards), preliminaryResult);
-                    }
-
-                    preliminaryResult = Straight(playerCards, SortCardsByValue(handCards), preliminaryResult);
-
-                    combinations = SearchMatch(playerCards, SortCardsByValue(handCards));
-                    max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
-                        .ToList();
-
-                    if (max.Count != 0)
-                    {
-                        switch (5 - max[0].ResultHand.Count)
-                        {
-                            case 1:
-                                {
-                                    preliminaryResult = FourKind(playerCards, SortCardsByValue(handCards), max, preliminaryResult);
-                                    break;
-                                }
-
-                            case 2:
-                                {
-                                    preliminaryResult = FullHouseORThreeKind(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
-                                    break;
-                                }
-
-                            case 3:
-                                {
-                                    preliminaryResult = TwoPairsORPairs(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
-                                    break;
-                                }
-                        }
-                    }
-                    else 
-                    {
-                        preliminaryResult = SearchOlder(playerCards, SortCardsByValue(handCards), preliminaryResult);
-                    }
-
-                    resultGame = preliminaryResult;
-
+                    resultGame = DefineCombinations(playerCards, handCards);
                     break;
                 case GameType.Omaha:
                     var playerPairs = GetHandCombinations(playerCards);
@@ -76,154 +41,89 @@ namespace Poker.Help
                         foreach (var p in boardPairs)
                         {
                             handCards = new List<Card>(p);
-
                             handCards.AddRange(e);
-
-                            preliminaryResult = Flush(playerCards, SortCardsBySuit(handCards), preliminaryResult);
-
-                            if (preliminaryResult.Count != 0 && preliminaryResult[0].HandValue == 6)
-                            {
-                                preliminaryResult = StraightFlush(playerCards, SortCardsByValue(handCards), preliminaryResult);
-                            }
-
-                            preliminaryResult = Straight(playerCards, SortCardsByValue(handCards), preliminaryResult);
-
-                            combinations = SearchMatch(playerCards, SortCardsByValue(handCards));
-                            max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
-                                .ToList();
-
-                            if (max.Count != 0)
-                            {
-                                switch (5 - max[0].ResultHand.Count)
-                                {
-                                    case 1:
-                                        {
-                                            preliminaryResult = FourKind(playerCards, SortCardsByValue(handCards), max, preliminaryResult);
-                                            break;
-                                        }
-
-                                    case 2:
-                                        {
-                                            preliminaryResult = FullHouseORThreeKind(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
-                                            break;
-                                        }
-
-                                    case 3:
-                                        {
-                                            preliminaryResult = TwoPairsORPairs(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
-                                            break;
-                                        }
-                                }
-                            }
-                            else
-                            {
-                                preliminaryResult = SearchOlder(playerCards, SortCardsByValue(handCards), preliminaryResult);
-                            }
-                            resultGame = preliminaryResult;
+                            resultGame = DefineCombinations(playerCards, handCards);
                         }
                     }
-                 
                     break;
                 case GameType.FiveCard:
                     handCards = new List<Card>();
                     handCards.AddRange(playerCards);
-
-                    preliminaryResult = Flush(playerCards, SortCardsBySuit(handCards), preliminaryResult);
-
-                    if (preliminaryResult.Count != 0 && preliminaryResult[0].HandValue == 6)
-                    {
-                        preliminaryResult = StraightFlush(playerCards, SortCardsByValue(handCards), preliminaryResult);
-                    }
-
-                    preliminaryResult = Straight(playerCards, SortCardsByValue(handCards), preliminaryResult);
-
-                    combinations = SearchMatch(playerCards, SortCardsByValue(handCards));
-                    max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
-                        .ToList();
-
-                    if (max.Count != 0)
-                    {
-                        switch (5 - max[0].ResultHand.Count)
-                        {
-                            case 1:
-                                {
-                                    preliminaryResult = FourKind(playerCards, SortCardsByValue(handCards), max, preliminaryResult);
-                                    break;
-                                }
-
-                            case 2:
-                                {
-                                    preliminaryResult = FullHouseORThreeKind(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
-                                    break;
-                                }
-
-                            case 3:
-                                {
-                                    preliminaryResult = TwoPairsORPairs(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
-                                    break;
-                                }
-                        }
-                    }
-                    else
-                    {
-                        preliminaryResult = SearchOlder(playerCards, SortCardsByValue(handCards), preliminaryResult);
-                    }
-
-                    resultGame = preliminaryResult;
+                    resultGame = DefineCombinations(playerCards, handCards);
                     break;
             }
-
             return resultGame;
         }
 
-        public static List<List<Card>> GetHandCombinations(List<Card> playerCards)
+        /// <summary>
+        /// Find best combinations
+        /// Check Flush. If Flush then check StraightFlush, if StraightFlush then return resultGame
+        /// else check the rest combinations
+        /// </summary>
+        /// <param name="playerCards">Hand cards player</param>
+        /// <param name="handCards">Table cards + player cards</param>
+        /// <returns>The best result</returns>
+        public static List<ResultGame> DefineCombinations(List<Card> playerCards, List<Card> handCards)
         {
-            var cards = new List<List<Card>>();
-            for (var i = 0; i < playerCards.Count; i++)
+            List<ResultGame> combinations;
+            List<ResultGame> max;
+            var preliminaryResult = new List<ResultGame>();
+
+            preliminaryResult = Flush(playerCards, SortCardsBySuit(handCards), preliminaryResult);
+
+            if (preliminaryResult.Count != 0 && preliminaryResult[0].HandValue == 6)
             {
-                for (var j = i + 1; j < playerCards.Count; j++)
+                preliminaryResult = StraightFlush(playerCards, SortCardsByValue(handCards), preliminaryResult);
+            }
+
+            if(preliminaryResult.Count != 0 && preliminaryResult[0].HandValue > 9)
+            {
+                preliminaryResult = Straight(playerCards, SortCardsByValue(handCards), preliminaryResult);
+
+                combinations = SearchMatch(playerCards, SortCardsByValue(handCards));
+                max = combinations.Where(c => c.HandValue == Convert.ToInt32(combinations.Max(e => e.HandValue)))
+                    .ToList();
+
+                if (max.Count != 0)
                 {
-                    var combinationCard = new List<Card>
+                    switch (5 - max[0].ResultHand.Count)
                     {
-                        new Card {Suit = playerCards[i].Suit, Value = playerCards[i].Value},
-                        new Card {Suit = playerCards[j].Suit, Value = playerCards[j].Value}
-                    };
-                    cards.Add(combinationCard);
+                        case 1:
+                            {
+                                preliminaryResult = FourKind(playerCards, SortCardsByValue(handCards), max, preliminaryResult);
+                                break;
+                            }
+
+                        case 2:
+                            {
+                                preliminaryResult = FullHouseORThreeKind(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
+                                break;
+                            }
+
+                        case 3:
+                            {
+                                preliminaryResult = TwoPairsORPairs(playerCards, SortCardsByValue(handCards), combinations, max, preliminaryResult);
+                                break;
+                            }
+                    }
+                }
+                else
+                {
+                    preliminaryResult = SearchOlder(playerCards, SortCardsByValue(handCards), preliminaryResult);
                 }
             }
-            return cards;
+          
+            return preliminaryResult;
         }
 
-        public static List<List<Card>> GetBoardCombinations(List<Card> board)
-        {
-            var boardCombinations = new List<List<Card>>();
-            var combinationCard = new List<Card>();
-            for (var i = 0; i < board.Count; i++)
-            {
-                var card = new List<Card>(board);
-                for (var j = i; j < board.Count-1; j++)
-                {
-                    card.Remove(card[i]);
-                    card.Remove(card[j]);
-                    combinationCard.AddRange(card);
-                    card.Clear();
-                    card.AddRange(board);
-                }
-            }
-            
-            for (var i = 0; i < combinationCard.Count; i=i+3)
-            {
-                var combination = new List<Card>();
-                for (var j = 0 + i; j < 3 + i; j++)
-                {
-                    combination.Add(new Card { Value = combinationCard[j].Value, Suit = combinationCard[j].Suit });
-                }
-                boardCombinations.Add(combination);
-            }
-
-            return boardCombinations;
-        }
-
+        /// <summary>
+        /// Define Flush
+        /// Sorting cards by suit, if 5 consecutive cards have the same suit, then Flush
+        /// </summary>
+        /// <param name="playerCards">Hand cards player</param>
+        /// <param name="handCards">Table cards + player cards</param>
+        /// <param name="resultGame">Result cards player</param>
+        /// <returns>List result player in game</returns>
         public static List<ResultGame> Flush (List<Card> playerCards, List<Card> handCards, List<ResultGame> resultGame)
         {
             for (int i = 0; i < handCards.Count - 4; i++)
@@ -234,10 +134,18 @@ namespace Poker.Help
                     break;
                 }
             }
-
             return resultGame;
         }
 
+        /// <summary>
+        /// Define StraightFlush
+        /// Sorting cards by value and suite, if we find 5 consecutive cards have the same suit 
+        /// and difference between each subsequent card is 1, then StraightFlush
+        /// </summary>
+        /// <param name="playerCards">Hand cards player</param>
+        /// <param name="handCards">Table cards + player cards</param>
+        /// <param name="resultGame">Result cards player</param>
+        /// <returns>List result player in game</returns>
         public static List<ResultGame> StraightFlush(List<Card> playerCards, List<Card> handCards, List<ResultGame> resultGame)
         {
             var countFlush = 1;
@@ -281,6 +189,14 @@ namespace Poker.Help
             return resultGame;
         }
 
+        /// <summary>
+        /// Define StraightFlush
+        /// Sorting cards by value and suite, if we find 5 consecutive cards difference between each subsequent card is 1, then Straight
+        /// </summary>
+        /// <param name="playerCards">Hand cards player</param>
+        /// <param name="handCards">Table cards + player cards</param>
+        /// <param name="resultGame">Result cards player</param>
+        /// <returns>List result player in game</returns>
         public static List<ResultGame> Straight (List<Card> playerCards, List<Card> handCards, List<ResultGame> resultGame)
         {
             var cardsPlayer = new List<Card>(handCards);
@@ -298,7 +214,6 @@ namespace Poker.Help
                     }
                     else if (countStraight == 4
                              && cardsPlayer[i].Value == 3
-                             && cardsPlayer[i].Suit == cardsPlayer[i - 1].Suit
                              && cardsPlayer.Count(a => a.Value == 14) == 1
                              && cardsPlayer.Count(a => a.Value == 2) == 1)
                     {
@@ -321,68 +236,15 @@ namespace Poker.Help
             return resultGame;
         }
 
-        public static List<ResultGame> SearchMatch(List<Card> playerCards, List<Card> handCards)
-        {
-            var combinations = new List<ResultGame>();
-
-            var count = 1;
-            for (var i = 0; i < handCards.Count - 1; i++)
-            {
-                if (handCards[i].Value - handCards[i + 1].Value == 0)
-                {
-                    count++;
-                }
-                else
-                {
-                    count = 1;
-                }
-
-                switch (count)
-                {
-                    case 4:
-                        {
-                            var resultHandCarts = new List<Card>();
-                            for (var j = i - 2; j <= i + 1; j++)
-                            {
-                                resultHandCarts.Add(new Card { Suit = handCards[j].Suit, Value = handCards[j].Value });
-                            }
-
-                            combinations.Add(new ResultGame
-                            { PlayerCards = playerCards, HandValue = 8, ResultHand = resultHandCarts });
-                            break;
-                        }
-
-                    case 3:
-                        {
-                            var resultHandCarts = new List<Card>();
-                            for (var j = i - 1; j <= i + 1; j++)
-                            {
-                                resultHandCarts.Add(new Card { Suit = handCards[j].Suit, Value = handCards[j].Value });
-                            }
-
-                            combinations.Add(new ResultGame
-                            { PlayerCards = playerCards, HandValue = 4, ResultHand = resultHandCarts });
-                            break;
-                        }
-
-                    case 2:
-                        {
-                            var resultHandCarts = new List<Card>();
-                            for (var j = i; j <= i + 1; j++)
-                            {
-                                resultHandCarts.Add(new Card { Suit = handCards[j].Suit, Value = handCards[j].Value });
-                            }
-
-                            combinations.Add(new ResultGame
-                            { PlayerCards = playerCards, HandValue = 2, ResultHand = resultHandCarts });
-                            break;
-                        }
-                }
-            }
-
-            return combinations;
-        }
-
+        /// <summary>
+        /// Define FourKind
+        /// Sorting card by value, if we find 4 consecutive cards and add one best card, then FourKind
+        /// </summary>
+        /// <param name="playerCards">Hand cards player</param>
+        /// <param name="handCards">Table cards + player cards</param>
+        /// <param name="max">The best consecutive cards</param>
+        /// <param name="resultGame">Result cards player</param>
+        /// <returns>List result player in game</returns>
         public static List<ResultGame> FourKind(List<Card> playerCards, List<Card> handCards, List<ResultGame> max, List<ResultGame> resultGame)
         {
             if (max.Count != 0)
@@ -397,6 +259,16 @@ namespace Poker.Help
             return resultGame;
         }
 
+        /// <summary>
+        /// Define FullHouseORThreeKind
+        /// Sorting card by value, if we find 3 consecutive cards and add find 2 consecutive cards, then FullHouse, 
+        /// else if we find 3 consecutive cards and we don't find 2 consecutive cards, then ThreeKind
+        /// </summary>
+        /// <param name="playerCards">Hand cards player</param>
+        /// <param name="handCards">Table cards + player cards</param>
+        /// <param name="max">The best consecutive cards</param>
+        /// <param name="resultGame">Result cards player</param>
+        /// <returns>List result player in game</returns>
         public static List<ResultGame> FullHouseORThreeKind(List<Card> playerCards, List<Card> handCards, List<ResultGame> combinations, List<ResultGame> max, List<ResultGame> resultGame)
         {
             if (combinations.Count > 2)
@@ -429,6 +301,16 @@ namespace Poker.Help
             return resultGame;
         }
 
+        /// <summary>
+        /// Define TwoPairsORPairs
+        /// Sorting card by value, if we find 2 consecutive cards and add find 2 consecutive cards, then TwoPairs, 
+        /// else if we find 2 consecutive cards and we don't find 2 consecutive cards, then Pairs
+        /// </summary>
+        /// <param name="playerCards">Hand cards player</param>
+        /// <param name="handCards">Table cards + player cards</param>
+        /// <param name="max">The best consecutive cards</param>
+        /// <param name="resultGame">Result cards player</param>
+        /// <returns>List result player in game</returns>
         public static List<ResultGame> TwoPairsORPairs(List<Card> playerCards, List<Card> handCards, List<ResultGame> combinations, List<ResultGame> max, List<ResultGame> resultGame)
         {
             if (combinations.Count > 1)
@@ -461,8 +343,16 @@ namespace Poker.Help
             }
 
             return resultGame;
-        } 
+        }
 
+        /// <summary>
+        /// Define SearchOlder
+        /// Sorting card by value, we choose five the best card
+        /// </summary>
+        /// <param name="playerCards">Hand cards player</param>
+        /// <param name="handCards">Table cards + player cards</param>
+        /// <param name="resultGame">Result cards player</param>
+        /// <returns>List result player in game</returns>
         public static List<ResultGame> SearchOlder(List<Card> playerCards, List<Card> handCards, List<ResultGame> resultGame)
         {
             var older = new List<Card>();
@@ -475,25 +365,6 @@ namespace Poker.Help
 
             return resultGame;
         }
-
-        public static List<ResultGame> ResultConverterCards(int resultHandValue, int i, List<Card> playerCards,
-            List<Card> handCards, List<ResultGame> resultGames)
-        {
-            if (resultGames.Count(p => p.PlayerCards == playerCards) != 0 && resultHandValue <=
-                resultGames.Where(p => p.PlayerCards == playerCards).Max(e => e.HandValue))
-            {
-                return resultGames;
-            }
-            resultGames.RemoveAll(p => p.PlayerCards == playerCards);
-            var resultHandCarts = new List<Card>();
-            for (var j = i; j < i + 5; j++)
-            {
-                resultHandCarts.Add(new Card { Suit = handCards[j].Suit, Value = handCards[j].Value });
-            }
-
-            resultGames.Add(new ResultGame
-            { HandValue = resultHandValue, PlayerCards = playerCards, ResultHand = resultHandCarts });
-            return resultGames;
-        }
+       
     }
 }
