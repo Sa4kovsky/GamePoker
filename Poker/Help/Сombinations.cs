@@ -77,7 +77,7 @@ namespace Poker.Help
 
             if (preliminaryResult.Count != 0 && preliminaryResult[0].HandValue == 6)
             {
-                preliminaryResult = StraightFlush(playerCards, SortCardsByValue(handCards), preliminaryResult);
+                preliminaryResult = StraightFlush(playerCards, SortCardsBySuit(handCards), preliminaryResult);
             }
 
             preliminaryResult = Straight(playerCards, SortCardsByValue(handCards), preliminaryResult);
@@ -216,8 +216,8 @@ namespace Poker.Help
                     }
                     else if (countStraight == 4
                              && cardsPlayer[i].Value == 3
-                             && cardsPlayer.Count(a => a.Value == 14) == 1
-                             && cardsPlayer.Count(a => a.Value == 2) == 1)
+                             && cardsPlayer.Count(a => a.Value == 14) >= 1
+                             && cardsPlayer.Count(a => a.Value == 2) >= 1)
                     {
                         cardsPlayer.Insert(i + 2, new Card { Value = 14, Suit = cardsPlayer[i].Suit });
                         resultGame = ResultConverterCards(resultHandValue: 5, i - 2, playerCards, cardsPlayer, resultGame);
